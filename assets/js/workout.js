@@ -12,6 +12,7 @@
   const formDbUrl = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json";
   const formImageBase = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
   let formDbPromise = null;
+  let mediaExercises = [];
 
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
@@ -19,7 +20,11 @@
 
   function toast(message) { window.dispatchEvent(new CustomEvent("nourish:toast", { detail: { message } })); }
   function state() { return N.storage.getState().workout; }
-  function allExercises() { return (N.exerciseCatalog || []).concat(state().customExercises || []); }
+  function allExercises() {
+    const originals = N.exerciseCatalog || [];
+    const retainedOriginals = mediaExercises.length ? originals.filter((exercise) => ["yoga", "pilates"].includes(exercise.type)) : originals;
+    return mediaExercises.concat(retainedOriginals, state().customExercises || []);
+  }
   function todayName() { return new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase(); }
   function todaySchedule() { return state().schedule.find((item) => item.day === todayName()) || { day: todayName(), focus: "Full body", active: true }; }
   function currentPlan() { return state().plans.find((item) => item.date === N.storage.getDayKey()) || null; }
@@ -108,6 +113,18 @@
     return String(value || "").toLowerCase().replace(/back squat/g, "barbell squat").replace(/standing overhead press/g, "military press").replace(/one-arm dumbbell row/g, "one arm dumbbell row").replace(/romanian deadlift/g, "stiff legged deadlift").replace(/\b(machine|exercise|alternating)\b/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
   }
 
+  function publicExercise(record) {
+    const typeMap = { strength: "strength", powerlifting: "strength", "olympic weightlifting": "strength", strongman: "strength", stretching: "mobility", plyometrics: "hiit", cardio: "cardio" };
+    const muscleMap = { abdominals: "core", lats: "back", "middle back": "back", "lower back": "back", traps: "back", quadriceps: "legs", hamstrings: "legs", glutes: "legs", calves: "legs", adductors: "legs", abductors: "legs" };
+    const primary = record.primaryMuscles && record.primaryMuscles[0] || "full body";
+    return { id: `public-${record.id}`, name: record.name, type: typeMap[record.category] || "strength", muscle: muscleMap[primary] || primary, equipment: record.equipment || "bodyweight", level: record.level || "beginner", sets: 3, reps: record.category === "stretching" ? "30–45 sec" : "8–12", rest: record.category === "stretching" ? 20 : 75, cue: (record.instructions || []).slice(0, 2).join(" ") || "Move with control through a comfortable range of motion.", mediaImages: record.images, mediaName: record.name };
+  }
+
+  function loadMediaCatalog() {
+    formDbPromise = fetch("assets/data/exercises-public-domain.json", { cache: "force-cache" }).then((response) => { if (!response.ok) throw new Error("Exercise catalogue unavailable"); return response.json(); });
+    formDbPromise.then((database) => { mediaExercises = database.filter((record) => record.images && record.images.length >= 2).map(publicExercise); if (window.location.hash.includes("workout")) render(); }).catch(() => {});
+  }
+
   function bestFormMatch(exercise, database) {
     const wanted = normalizedExerciseName(exercise.name); const wantedTokens = wanted.split(" ").filter(Boolean);
     let best = null; let bestScore = 0;
@@ -138,8 +155,8 @@
     visual.insertAdjacentHTML("beforeend", '<span class="form-media-loading">Finding exercise-specific form…</span>');
     try {
       if (!formDbPromise) formDbPromise = fetch(formDbUrl, { cache: "force-cache" }).then((response) => { if (!response.ok) throw new Error("Form library unavailable"); return response.json(); });
-      const database = await formDbPromise; const match = bestFormMatch(exercise, database);
-      if (!match || dialog.dataset.exerciseId !== exercise.id) { const status = $(".form-media-loading", visual); if (status) status.textContent = "Animated movement pattern"; return; }
+      const database = await formDbPromise; const match = exercise.mediaImages ? { images: exercise.mediaImages, name: exercise.mediaName || exercise.name } : bestFormMatch(exercise, database);
+      if (!match || dialog.dataset.exerciseId !== exercise.id) { visual.innerHTML = '<div class="form-unavailable"><span>◇</span><strong>No verified demonstration yet</strong><p>Nourish will not show a generic or potentially incorrect movement for this exercise.</p></div>'; return; }
       const urls = match.images.slice(0, 2).map((path) => formImageBase + path.split("/").map(encodeURIComponent).join("/"));
       visual.innerHTML = `<div class="exercise-photo-sequence" data-photo-sequence><img src="${escapeHtml(urls[0])}" alt="${escapeHtml(exercise.name)} starting position"><img src="${escapeHtml(urls[1])}" alt="${escapeHtml(exercise.name)} finishing position"></div><small>${escapeHtml(match.name)} · start and finish positions</small><button class="demo-control" type="button" data-toggle-photo-demo>Pause demonstration</button><a class="form-source-link" href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Public-domain form source</a>`;
       startPhotoSequence($("[data-photo-sequence]", visual));
@@ -349,6 +366,6 @@
     window.addEventListener("nourish:state", () => { if (window.location.hash.includes("workout")) render(); });
   }
 
-  document.addEventListener("DOMContentLoaded", () => { bind(); render(); });
+  document.addEventListener("DOMContentLoaded", () => { bind(); render(); loadMediaCatalog(); });
   N.workout = { render, generatePlan };
 }());
