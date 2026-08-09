@@ -25,8 +25,13 @@
       logs: [],
       waterLogs: [],
       customFoods: [],
+      favoriteFoodIds: [],
       coachMessages: [],
-      settings: { theme: "system", reduceMotion: false },
+      settings: {
+        theme: "system",
+        reduceMotion: false,
+        hydrationReminder: { enabled: false, intervalMinutes: 60, startTime: "08:00", endTime: "22:00", amount: 250, sound: true, vibration: true, lastReminderAt: null, nextReminderAt: null }
+      },
       meta: { createdAt: new Date().toISOString(), lastOpenedAt: new Date().toISOString() }
     };
   }
@@ -38,8 +43,10 @@
     clean.logs = Array.isArray(candidate.logs) ? candidate.logs.filter((item) => item && item.id && item.foodId && item.date) : [];
     clean.waterLogs = Array.isArray(candidate.waterLogs) ? candidate.waterLogs.filter((item) => item && item.id && item.date && Number(item.amount) > 0) : [];
     clean.customFoods = Array.isArray(candidate.customFoods) ? candidate.customFoods.filter((item) => item && item.id && item.name) : [];
+    clean.favoriteFoodIds = Array.isArray(candidate.favoriteFoodIds) ? candidate.favoriteFoodIds.filter((item) => typeof item === "string").slice(0, 500) : [];
     clean.coachMessages = Array.isArray(candidate.coachMessages) ? candidate.coachMessages.filter((item) => item && ["user", "assistant"].includes(item.role) && typeof item.content === "string").slice(-30) : [];
     clean.settings = Object.assign(clean.settings, candidate.settings || {});
+    clean.settings.hydrationReminder = Object.assign(freshState().settings.hydrationReminder, candidate.settings && candidate.settings.hydrationReminder || {});
     clean.meta = Object.assign(clean.meta, candidate.meta || {}, { lastOpenedAt: new Date().toISOString() });
     return clean;
   }
@@ -97,6 +104,12 @@
       save();
       return record;
     },
+    toggleFavoriteFood(foodId) {
+      const id = String(foodId || "");
+      if (!id) return save();
+      state.favoriteFoodIds = state.favoriteFoodIds.includes(id) ? state.favoriteFoodIds.filter((item) => item !== id) : state.favoriteFoodIds.concat(id);
+      return save();
+    },
     addCoachMessage(role, content, source) {
       state.coachMessages.push({ id: uid("chat"), role, content: String(content).slice(0, 4000), source: source || "local", createdAt: new Date().toISOString() });
       state.coachMessages = state.coachMessages.slice(-30);
@@ -108,6 +121,10 @@
     },
     updateSettings(settings) {
       state.settings = Object.assign({}, state.settings, settings);
+      return save();
+    },
+    updateHydrationReminder(reminder) {
+      state.settings.hydrationReminder = Object.assign({}, state.settings.hydrationReminder, reminder);
       return save();
     },
     exportData() {

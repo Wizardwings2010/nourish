@@ -251,6 +251,7 @@
       const ids = [...state.logs].reverse().map((entry) => entry.foodId);
       foods = foods.filter((food) => ids.includes(food.id)).sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
     }
+    if (activeFoodFilter === "favorites") foods = foods.filter((food) => state.favoriteFoodIds.includes(food.id));
     if (activeFoodFilter === "indian") foods = foods.filter((food) => (food.tags || []).includes("indian"));
     if (activeFoodFilter === "produce") foods = foods.filter((food) => food.category === "fruit" || String(food.category).includes("vegetable"));
     if (activeFoodFilter === "treats") foods = foods.filter((food) => /snack|sweet|dessert|fast food|branded/.test(food.category) || (food.tags || []).includes("treat"));
@@ -265,7 +266,8 @@
   }
 
   function foodCard(food) {
-    return `<button class="food-card" type="button" data-food-id="${escapeHtml(food.id)}"><span class="food-emoji" aria-hidden="true">${escapeHtml(food.emoji || "🍽️")}</span><div><strong>${escapeHtml(food.name)}</strong><small>${escapeHtml(food.servingLabel)}</small></div><span>${formatNumber(food.calories)} kcal</span></button>`;
+    const favorite = N.storage.getState().favoriteFoodIds.includes(food.id);
+    return `<button class="food-card" type="button" data-food-id="${escapeHtml(food.id)}"><span class="food-emoji" aria-hidden="true">${escapeHtml(food.emoji || "🍽️")}</span><div><strong>${escapeHtml(food.name)}${favorite ? '<i class="favorite-mark" aria-label="Favorite">★</i>' : ""}</strong><small>${escapeHtml(food.servingLabel)}</small></div><span>${formatNumber(food.calories)} kcal</span></button>`;
   }
 
   function renderLog() {
@@ -297,9 +299,11 @@
     const totals = N.nutrition.totalsForDay();
     const targets = profileTargets(N.storage.getState().profile);
     const remainingCalories = Math.max(0, targets.calories - totals.calories);
+    const isFavorite = N.storage.getState().favoriteFoodIds.includes(food.id);
     const content = $("[data-food-dialog-content]");
     content.innerHTML = `<form class="food-dialog-inner" data-add-food-form>
       <div class="dialog-food-hero"><span class="food-emoji" aria-hidden="true">${escapeHtml(food.emoji || "🍽️")}</span><div><h2>${escapeHtml(food.name)}</h2><p>${escapeHtml(food.servingLabel)} · starter value estimate</p></div></div>
+      <button class="favorite-button ${isFavorite ? "is-favorite" : ""}" type="button" data-favorite-food="${escapeHtml(food.id)}" aria-pressed="${isFavorite}"><span aria-hidden="true">${isFavorite ? "★" : "☆"}</span> ${isFavorite ? "Saved to favorites" : "Save to favorites"}</button>
       <div class="nutrition-facts" data-scaled-facts>
         <div><strong>${formatNumber(food.calories)}</strong><span>Calories</span></div><div><strong>${formatNumber(food.protein, 1)}g</strong><span>Protein</span></div><div><strong>${formatNumber(food.fiber, 1)}g</strong><span>Fibre</span></div><div><strong>${formatNumber(food.carbs, 1)}g</strong><span>Carbs</span></div>
       </div>
@@ -309,6 +313,15 @@
     </form>`;
     const form = $("[data-add-food-form]", content);
     const portionInput = $('input[name="portion"]', form);
+    $("[data-favorite-food]", form).addEventListener("click", (event) => {
+      N.storage.toggleFavoriteFood(food.id);
+      const favorite = N.storage.getState().favoriteFoodIds.includes(food.id);
+      event.currentTarget.classList.toggle("is-favorite", favorite);
+      event.currentTarget.setAttribute("aria-pressed", String(favorite));
+      event.currentTarget.innerHTML = `<span aria-hidden="true">${favorite ? "★" : "☆"}</span> ${favorite ? "Saved to favorites" : "Save to favorites"}`;
+      renderLog();
+      showToast(favorite ? `${food.name} saved to favorites.` : `${food.name} removed from favorites.`);
+    });
     const updateScaled = () => {
       const scaled = N.nutrition.scaleFood(food, portionInput.value);
       $("[data-scaled-facts]", form).innerHTML = `<div><strong>${formatNumber(scaled.calories)}</strong><span>Calories</span></div><div><strong>${formatNumber(scaled.protein, 1)}g</strong><span>Protein</span></div><div><strong>${formatNumber(scaled.fiber, 1)}g</strong><span>Fibre</span></div><div><strong>${formatNumber(scaled.carbs, 1)}g</strong><span>Carbs</span></div>`;
@@ -381,6 +394,7 @@
     $("[data-profile-name-heading]").textContent = profile.name;
     $("[data-profile-avatar]").textContent = profile.name.slice(0, 1).toUpperCase();
     applySettings();
+    if (N.reminders) N.reminders.render();
   }
 
   function renderSharedProfileBits() {
@@ -412,6 +426,7 @@
     window.addEventListener("online", updateNetworkStatus);
     window.addEventListener("offline", updateNetworkStatus);
     window.addEventListener("beforeinstallprompt", (event) => { event.preventDefault(); installPrompt = event; });
+    window.addEventListener("nourish:toast", (event) => showToast(event.detail && event.detail.message ? event.detail.message : "Nourish updated."));
 
     document.addEventListener("click", async (event) => {
       const foodCardButton = event.target.closest("[data-food-id]");
@@ -439,6 +454,8 @@
       if (event.target.closest("[data-log-recommendation]") && selectedRecommendation) openFood(selectedRecommendation.id);
       if (event.target.closest("[data-create-food]")) $("[data-custom-food-dialog]").showModal();
       if (event.target.closest("[data-close-custom]")) $("[data-custom-food-dialog]").close();
+      if (event.target.closest("[data-custom-water]")) $("[data-custom-water-dialog]").showModal();
+      if (event.target.closest("[data-close-custom-water]")) $("[data-custom-water-dialog]").close();
 
       const filterButton = event.target.closest("[data-filter]");
       if (filterButton) {
@@ -479,6 +496,16 @@
       $("[data-custom-food-dialog]").close();
       renderLog();
       showToast(`${food.name} saved to My foods.`);
+    });
+
+    $("[data-custom-water-form]").addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!event.currentTarget.reportValidity()) return;
+      const amount = Number(new FormData(event.currentTarget).get("amount"));
+      N.storage.addWater(amount);
+      $("[data-custom-water-dialog]").close();
+      renderAll();
+      showToast(`${amount} ml water added.`);
     });
 
     $("[data-profile-form]").addEventListener("submit", (event) => {
@@ -570,7 +597,10 @@
         refreshing = true;
         window.location.reload();
       });
-      navigator.serviceWorker.register("sw.js").then((registration) => registration.update()).catch(() => {});
-    }
+      navigator.serviceWorker.register("sw.js").then((registration) => {
+        registration.update();
+        if (N.reminders) N.reminders.init();
+      }).catch(() => { if (N.reminders) N.reminders.init(); });
+    } else if (N.reminders) N.reminders.init();
   });
 }());

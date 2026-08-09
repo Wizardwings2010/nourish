@@ -4,12 +4,13 @@ NOURISH — INSTALLABLE PERSONAL NUTRITION APP
 WHAT IS INCLUDED
 ----------------
 Nourish is a mobile-first Progressive Web App. It includes a public introduction,
-private nutrition dashboard, first-time setup, meal and water logging, a starter
-food library, custom foods, contextual recommendations, weekly insights, local
+private nutrition dashboard, first-time setup, meal and water logging, a large
+food library, favorites, custom foods, contextual recommendations, weekly insights, local
 backup and restore, dark mode, offline support, and Nourish Coach. The Log screen
 also includes private camera capture and free on-device image classification. Its
-115-item library covers staple foods, Indian meals, treats, packaged brands,
-fruits, and vegetables.
+181-item library covers staple foods, Indian meals, treats, packaged brands,
+fruits, vegetables and drinks. Hydration reminders can be set from 30 minutes to
+3 hours, limited to user-selected active hours, with optional sound and vibration.
 
 No Node.js, npm, framework, build step, or package installation is required.
 
@@ -57,6 +58,11 @@ Core profile, meal, water, custom food, settings and recent Coach history are
 stored on the device in browser storage. Use Profile > Export backup regularly.
 Clearing site data or uninstalling a browser may remove local information.
 
+Hydration reminder preferences are stored on the device. Notification permission
+is requested only when reminders are enabled or tested. Reminders are reliable
+while Nourish is open; Android and Chrome control background work and may delay or
+skip alerts when the installed app is put to sleep.
+
 Meal photos selected through the camera are processed in the browser and are not
 uploaded by Nourish. The first scan downloads TensorFlow.js and a small MobileNet
 classification model from public CDNs. Visual matches and portion estimates can
@@ -90,10 +96,12 @@ sw.js                          Offline application shell
 
 assets/css/styles.css          Complete responsive visual system
 assets/js/data.js              Starter food library
+assets/js/foods-expanded.js    Expanded Indian and international food library
 assets/js/storage.js           On-device data, backup and restore
 assets/js/nutrition.js         Targets, totals and recommendation engine
 assets/js/coach.js             Live AI connection and offline Coach
 assets/js/camera.js            Camera capture and on-device food suggestions
+assets/js/reminders.js         Hydration reminder settings and scheduling
 assets/js/app.js               App screens and interactions
 assets/js/landing.js           Landing animations and installation flow
 assets/icons/                  App and home-screen icons
