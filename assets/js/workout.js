@@ -101,6 +101,41 @@
   function bodySvg() { return '<circle class="head" cx="75" cy="28" r="14"/><line class="torso" x1="75" y1="43" x2="75" y2="91"/>'; }
   function legsSvg() { return '<line class="limb" x1="75" y1="89" x2="52" y2="137"/><line class="limb" x1="75" y1="89" x2="98" y2="137"/>'; }
 
+  function startFormAnimation(profile, demo) {
+    const svg = $(".form-svg", demo); if (!svg || !svg.animate) return;
+    if (typeof svg.pauseAnimations === "function") svg.pauseAnimations();
+    demo.style.animation = "none"; demo.style.transform = "none";
+    const group = $("g", svg); const limbs = $$(".limb", svg); const bar = $(".bar", svg);
+    const options = { duration: profile === "cardio" ? 900 : profile === "flow" ? 3200 : 2100, iterations: Infinity, easing: "ease-in-out", direction: "alternate" };
+    const animations = [];
+    const move = (element, frames, custom) => { if (element) animations.push(element.animate(frames, Object.assign({}, options, custom || {}))); };
+    if (profile === "squat") {
+      move(group, [{ transform: "translateY(-5px) scaleY(1)" }, { transform: "translateY(27px) scaleY(.78)" }]);
+      move(limbs[0], [{ transform: "rotate(0deg)", transformOrigin: "75px 89px" }, { transform: "rotate(27deg)", transformOrigin: "75px 89px" }]);
+      move(limbs[1], [{ transform: "rotate(0deg)", transformOrigin: "75px 89px" }, { transform: "rotate(-27deg)", transformOrigin: "75px 89px" }]);
+    } else if (profile === "press") {
+      move(bar, [{ transform: "translateY(0)" }, { transform: "translateY(-52px)" }]);
+      move(limbs[0], [{ transform: "rotate(0deg)", transformOrigin: "71px 52px" }, { transform: "rotate(-38deg)", transformOrigin: "71px 52px" }]);
+      move(limbs[1], [{ transform: "rotate(0deg)", transformOrigin: "79px 52px" }, { transform: "rotate(38deg)", transformOrigin: "79px 52px" }]);
+    } else if (profile === "pull") {
+      move(group, [{ transform: "translateY(18px)" }, { transform: "translateY(-13px)" }]);
+      move(limbs[0], [{ transform: "rotate(-12deg)", transformOrigin: "48px 20px" }, { transform: "rotate(22deg)", transformOrigin: "48px 20px" }]);
+      move(limbs[1], [{ transform: "rotate(12deg)", transformOrigin: "102px 20px" }, { transform: "rotate(-22deg)", transformOrigin: "102px 20px" }]);
+    } else if (profile === "core") {
+      move(group, [{ transform: "translateY(8px) rotate(0deg)", transformOrigin: "75px 90px" }, { transform: "translateY(-8px) rotate(-30deg)", transformOrigin: "75px 90px" }]);
+    } else if (profile === "flow") {
+      move(group, [{ transform: "rotate(-12deg) translateY(5px)", transformOrigin: "75px 110px" }, { transform: "rotate(18deg) translateY(-8px)", transformOrigin: "75px 110px" }]);
+      move(limbs[0], [{ transform: "rotate(-8deg)" }, { transform: "rotate(28deg)" }]);
+    } else if (profile === "cardio") {
+      limbs.forEach((limb, index) => move(limb, [{ transform: `rotate(${index % 2 ? -28 : 28}deg)` }, { transform: `rotate(${index % 2 ? 28 : -28}deg)` }], { delay: index % 2 ? -450 : 0 }));
+      move(group, [{ transform: "translateY(-8px)" }, { transform: "translateY(7px)" }]);
+    } else {
+      move(group, [{ transform: "translateY(15px)" }, { transform: "translateY(-15px)" }]);
+      move(bar, [{ transform: "translateY(0)" }, { transform: "translateY(-25px)" }]);
+    }
+    demo._formAnimations = animations;
+  }
+
   function suggestedExercises() {
     const schedule = todaySchedule();
     const types = state().profile.types.length ? state().profile.types : ["strength"];
@@ -186,7 +221,8 @@
     const profile = state().profile; const plan = prescription(exercise, profile);
     $("[data-exercise-dialog-content]").innerHTML = `<div class="exercise-detail"><div class="exercise-detail-visual"><div class="exercise-figure-3d type-${escapeHtml(exercise.type)}"><span></span><i></i><b></b><em></em></div><small>Illustrative movement guide</small></div><div class="exercise-detail-copy"><span class="card-kicker">${escapeHtml(typeLabels[exercise.type] || exercise.type)}</span><h2>${escapeHtml(exercise.name)}</h2><div class="exercise-tags"><span>${escapeHtml(exercise.muscle)}</span><span>${escapeHtml(exercise.equipment)}</span><span>${escapeHtml(exercise.level)}</span></div><p>${escapeHtml(exercise.cue)}</p><div class="exercise-prescription"><div><strong>${plan.sets}</strong><small>sets</small></div><div><strong>${escapeHtml(plan.reps)}</strong><small>reps / time</small></div><div><strong>${plan.rest}s</strong><small>rest</small></div></div><ol><li>Set up the equipment and choose a manageable starting resistance.</li><li>Brace, breathe and complete each repetition without rushing.</li><li>End the set with one or two good repetitions still possible when learning.</li></ol><button class="button button-primary button-full" type="button" data-add-workout-exercise="${escapeHtml(exercise.id)}">Add to today’s plan</button></div></div>`;
     const demo = $(".exercise-figure-3d", $("[data-exercise-dialog-content]"));
-    demo.classList.add(`motion-${motionProfile(exercise)}`); demo.dataset.formDemo = ""; demo.innerHTML = formDemoSvg(motionProfile(exercise));
+    const profileName = motionProfile(exercise);
+    demo.classList.add(`motion-${profileName}`); demo.dataset.formDemo = ""; demo.innerHTML = formDemoSvg(profileName); startFormAnimation(profileName, demo);
     demo.insertAdjacentHTML("afterend", '<small>Looped form guide · slow and controlled</small><button class="demo-control" type="button" data-toggle-form-demo>Pause animation</button>');
     $("[data-exercise-dialog]").showModal();
   }
@@ -233,7 +269,7 @@
       const toggle = event.target.closest("[data-toggle-workout-exercise]"); if (toggle) updatePlan((items) => { const item = items.find((entry) => entry.exerciseId === toggle.dataset.toggleWorkoutExercise); if (item) item.done = !item.done; });
       const remove = event.target.closest("[data-remove-workout-exercise]"); if (remove) updatePlan((items) => { const index = items.findIndex((entry) => entry.exerciseId === remove.dataset.removeWorkoutExercise); if (index >= 0) items.splice(index, 1); });
       if (event.target.closest("[data-finish-workout]")) finishWorkout();
-      const demoToggle = event.target.closest("[data-toggle-form-demo]"); if (demoToggle) { const demo = $("[data-form-demo]"); const svg = $("svg", demo); demo.classList.toggle("is-paused"); if (demo.classList.contains("is-paused")) svg.pauseAnimations(); else svg.unpauseAnimations(); demoToggle.textContent = demo.classList.contains("is-paused") ? "Play animation" : "Pause animation"; }
+      const demoToggle = event.target.closest("[data-toggle-form-demo]"); if (demoToggle) { const demo = $("[data-form-demo]"); demo.classList.toggle("is-paused"); (demo._formAnimations || []).forEach((animation) => demo.classList.contains("is-paused") ? animation.pause() : animation.play()); demoToggle.textContent = demo.classList.contains("is-paused") ? "Play animation" : "Pause animation"; }
       if (event.target.closest("[data-open-custom-exercise]")) $("[data-custom-exercise-dialog]").showModal();
       if (event.target.closest("[data-close-workout-dialog]")) event.target.closest("dialog").close();
       if (event.target.closest("[data-exercise-more]")) { catalogLimit += 24; renderCatalog(); }
