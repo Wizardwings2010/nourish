@@ -11,6 +11,10 @@ also includes private camera capture and free on-device image classification. It
 181-item library covers staple foods, Indian meals, treats, packaged brands,
 fruits, vegetables and drinks. Hydration reminders can be set from 30 minutes to
 3 hours, limited to user-selected active hours, with optional sound and vibration.
+The expanded personal toolkit includes free barcode lookup, meal templates, a
+recipe calculator, portion guidance, daily meal planning, shopping lists,
+healthier alternatives, Coach memory, weight and measurement trends, private
+progress photos, discipline scoring, achievements and installable app shortcuts.
 
 No Node.js, npm, framework, build step, or package installation is required.
 
@@ -69,6 +73,11 @@ classification model from public CDNs. Visual matches and portion estimates can
 be wrong, especially for mixed dishes, so the user always confirms a library item
 and serving before it is logged.
 
+Barcode numbers are sent to the public Open Food Facts service only when the user
+chooses Look up food. Progress photos are compressed and stored only in the
+browser's local storage; they are not uploaded by Nourish. Keep photo use modest
+because browser storage is limited.
+
 Live Coach requests send only the current question, recent conversation, dietary
 preference, declared allergens, and a limited summary of daily totals and targets.
 They do not send a name or exact body measurements.
@@ -102,6 +111,7 @@ assets/js/nutrition.js         Targets, totals and recommendation engine
 assets/js/coach.js             Live AI connection and offline Coach
 assets/js/camera.js            Camera capture and on-device food suggestions
 assets/js/reminders.js         Hydration reminder settings and scheduling
+assets/js/features.js          Planning, recipes, barcode, progress and habits
 assets/js/app.js               App screens and interactions
 assets/js/landing.js           Landing animations and installation flow
 assets/icons/                  App and home-screen icons

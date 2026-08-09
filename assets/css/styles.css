@@ -336,6 +336,9 @@ em { color: var(--green-deep); font-style: normal; }
 .view-heading > div > p:last-child { margin: 0; color: var(--muted); }
 .date-label { margin: 0; color: var(--green-deep); font-size: 10px; font-weight: 850; letter-spacing: 0.12em; text-transform: uppercase; }
 .today-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.quick-action-rail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-bottom: 14px; }
+.quick-action-rail button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); color: var(--ink); cursor: pointer; font-size: 10px; font-weight: 800; }
+.quick-action-rail span { color: var(--green-deep); font-size: 17px; }
 .dashboard-card { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); box-shadow: 0 6px 24px rgba(23,33,27,0.025); }
 .card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
 .card-heading h2 { margin: 4px 0 0; font-size: 21px; letter-spacing: -0.035em; }
@@ -352,6 +355,11 @@ em { color: var(--green-deep); font-style: normal; }
 .recommendation-card .button-dark { background: var(--green); color: #17211b; }
 .recommendation-card .text-link { color: white; }
 .meals-card { grid-column: span 12; padding: 24px; }
+.daily-plan-card { grid-column: span 12; }
+.daily-plan-card > p { margin: -3px 0 16px; color: var(--muted); font-size: 10px; }
+.daily-plan-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+.plan-row { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+.plan-row > span { font-size: 25px; }.plan-row > div { min-width: 0; display: grid; gap: 2px; }.plan-row small { color: var(--green-deep); font-size: 7px; font-weight: 850; text-transform: uppercase; }.plan-row strong { overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }.plan-row em { color: var(--muted); font-size: 8px; font-style: normal; }.plan-row button { min-width: 34px; height: 32px; padding: 0 8px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); cursor: pointer; font-size: 9px; font-weight: 800; }
 .calorie-layout { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: clamp(28px, 4vw, 58px); padding: 27px 10px 8px; }
 .calorie-ring { --progress: 0deg; position: relative; display: grid; place-items: center; width: clamp(150px, 16vw, 195px); height: clamp(150px, 16vw, 195px); border-radius: 50%; background: conic-gradient(var(--green) var(--progress), var(--surface-soft) 0); transition: background 500ms ease; }
 .calorie-ring::before { content: ""; position: absolute; inset: 17px; border-radius: 50%; background: var(--surface); }
@@ -401,6 +409,7 @@ em { color: var(--green-deep); font-style: normal; }
 .camera-log-copy p { max-width: 570px; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
 .camera-button { position: relative; z-index: 1; min-height: 44px; cursor: pointer; white-space: nowrap; }
 .camera-button input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.camera-buttons { position: relative; z-index: 1; display: flex; gap: 8px; }.camera-buttons .button { white-space: nowrap; }
 .camera-analysis { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(180px, 0.72fr) minmax(0, 1.28fr); gap: 17px; padding-top: 18px; border-top: 1px solid var(--line); }
 .camera-analysis[hidden] { display: none; }
 .camera-preview { position: relative; min-height: 240px; border-radius: 18px; background: var(--ink); overflow: hidden; }
@@ -438,6 +447,9 @@ em { color: var(--green-deep); font-style: normal; }
 .search-wrap input { width: 100%; height: 58px; padding: 0 18px 0 50px; border: 1px solid var(--line); border-radius: 17px; background: var(--surface); color: var(--ink); outline: none; }
 .search-wrap input:focus { border-color: var(--green-deep); box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 30%, transparent); }
 .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0 30px; }
+.food-tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 0 0 16px; }
+.food-tool-grid button { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; padding: 13px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); text-align: left; cursor: pointer; }
+.food-tool-grid button > span { grid-row: 1 / 3; align-self: center; color: var(--green-deep); font-size: 22px; }.food-tool-grid strong { font-size: 10px; }.food-tool-grid small { color: var(--muted); font-size: 8px; }
 .filter-chip { padding: 8px 12px; border: 1px solid var(--line); border-radius: 99px; background: transparent; color: var(--muted); cursor: pointer; font-size: 10px; font-weight: 750; }
 .filter-chip.is-active { border-color: var(--ink); background: var(--ink); color: var(--paper); }
 .food-results-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -475,6 +487,9 @@ em { color: var(--green-deep); font-style: normal; }
 .log-entry small { color: var(--muted); font-size: 9px; }
 .log-entry button { align-self: center; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; }
 .log-empty { padding: 18px 0; color: var(--muted); font-size: 10px; text-align: center; }
+.template-card { grid-column: auto; }
+.template-row { display: grid; grid-template-columns: 1fr auto; align-items: center; border-top: 1px solid var(--line); }.template-row > button:first-child { display: grid; gap: 3px; padding: 11px 0; border: 0; background: transparent; text-align: left; cursor: pointer; }.template-row strong { font-size: 10px; }.template-row small { color: var(--muted); font-size: 8px; }.template-row > button:last-child { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; }
+.feature-empty { padding: 24px; border: 1px dashed var(--line); border-radius: 13px; color: var(--muted); font-size: 9px; text-align: center; }.feature-empty.compact { padding: 14px 7px; }
 
 /* Coach app */
 .coach-view-heading { align-items: center; }
@@ -516,6 +531,9 @@ em { color: var(--green-deep); font-style: normal; }
 /* Insights */
 .insights-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
 .insight-hero-card { grid-column: span 5; display: flex; align-items: center; justify-content: space-between; padding: 27px; background: var(--green); color: #17211b; }
+.discipline-card { grid-column: span 5; display: grid; grid-template-columns: .7fr 1.3fr; gap: 20px; align-items: center; }.discipline-card h2 { margin: 5px 0; font-size: 48px; letter-spacing: -.06em; }.discipline-card h2 small { color: var(--muted); font-size: 13px; }.discipline-card p { color: var(--muted); font-size: 9px; line-height: 1.5; }
+.discipline-breakdown { display: grid; gap: 9px; }.discipline-breakdown > div { display: grid; grid-template-columns: 50px 1fr 30px; align-items: center; gap: 7px; font-size: 8px; }.discipline-breakdown i { height: 6px; border-radius: 9px; background: var(--line); overflow: hidden; }.discipline-breakdown b { display: block; height: 100%; border-radius: inherit; background: var(--green-deep); }.discipline-breakdown strong { text-align: right; }
+.achievements-card { grid-column: span 7; }.achievement-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }.achievement { display: grid; gap: 4px; padding: 11px; border: 1px solid var(--line); border-radius: 12px; opacity: .48; }.achievement.is-unlocked { border-color: color-mix(in srgb, var(--green-deep) 35%, var(--line)); background: var(--green-soft); opacity: 1; }.achievement > span { color: var(--green-deep); }.achievement strong { font-size: 9px; }.achievement small { color: var(--muted); font-size: 7px; line-height: 1.4; }
 .insight-hero-card h2 { margin: 5px 0; font-size: 48px; letter-spacing: -0.06em; }
 .insight-hero-card p { max-width: 230px; margin: 0; color: rgba(23,33,27,0.65); font-size: 10px; line-height: 1.55; }
 .consistency-ring { --score: 0deg; position: relative; display: grid; place-items: center; width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(#17211b var(--score), rgba(23,33,27,0.15) 0); }
@@ -597,11 +615,15 @@ em { color: var(--green-deep); font-style: normal; }
 .reminder-status { margin-top: 15px; padding: 11px 12px; border-radius: 11px; background: color-mix(in srgb, var(--blue) 16%, var(--surface)); color: var(--ink); font-size: 10px; font-weight: 750; line-height: 1.45; }
 .reminder-permission, .reminder-note { display: block; margin-top: 8px; color: var(--muted); font-size: 8px; line-height: 1.5; }
 .reminder-note { opacity: 0.8; }
+.form-section-copy { margin: -8px 0 16px; color: var(--muted); font-size: 9px; line-height: 1.5; }
+.body-progress-card form > label { display: grid; gap: 7px; color: var(--muted); font-size: 9px; font-weight: 700; }.body-progress-card details { margin-top: 15px; border-top: 1px solid var(--line); }.body-progress-card summary { padding: 14px 0; cursor: pointer; font-size: 10px; font-weight: 800; }.measurement-form { display: grid; gap: 8px; }.progress-photo-label { position: relative; cursor: pointer; }.progress-photo-label input { position: absolute; width: 1px; height: 1px; opacity: 0; }.weight-trend { margin-top: 14px; }.weight-summary { display: flex; justify-content: space-between; align-items: end; }.weight-summary strong { font-size: 22px; }.weight-summary small { color: var(--muted); font-size: 8px; }.weight-bars { display: flex; align-items: end; gap: 4px; height: 68px; margin-top: 8px; padding: 8px; border-radius: 11px; background: var(--surface-soft); }.weight-bars i { flex: 1; min-height: 8px; border-radius: 5px 5px 2px 2px; background: var(--green-deep); }
+.progress-photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }.progress-photo-grid figure { position: relative; margin: 0; }.progress-photo-grid img { width: 100%; aspect-ratio: 1; border-radius: 9px; object-fit: cover; }.progress-photo-grid button { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: rgba(0,0,0,.65); color: white; cursor: pointer; }.progress-photo-grid figcaption { color: var(--muted); font-size: 7px; }
+.shopping-add { display: grid; grid-template-columns: 1fr auto; gap: 7px; margin: 13px 0; }.shopping-add button { width: 45px; border: 0; border-radius: 12px; background: var(--green-deep); color: white; cursor: pointer; font-size: 20px; }.shopping-list { display: grid; gap: 5px; }.shopping-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; padding: 9px; border: 1px solid var(--line); border-radius: 10px; }.shopping-row input { accent-color: var(--green-deep); }.shopping-row span { display: grid; gap: 2px; }.shopping-row strong { font-size: 9px; }.shopping-row small { color: var(--muted); font-size: 7px; }.shopping-row button { border: 0; background: transparent; color: var(--muted); cursor: pointer; }.shopping-row.is-checked span { opacity: .5; text-decoration: line-through; }
 
 /* Dialogs */
 dialog { color: var(--ink); }
-.food-dialog, .custom-food-dialog, .custom-water-dialog { width: min(520px, calc(100% - 24px)); max-height: calc(100vh - 24px); padding: 0; border: 0; border-radius: 26px; background: var(--surface); box-shadow: var(--shadow-lg); overflow: auto; }
-.food-dialog::backdrop, .custom-food-dialog::backdrop, .custom-water-dialog::backdrop { background: rgba(12,18,14,0.62); backdrop-filter: blur(5px); }
+.food-dialog, .custom-food-dialog, .custom-water-dialog, .feature-dialog { width: min(520px, calc(100% - 24px)); max-height: calc(100vh - 24px); padding: 0; border: 0; border-radius: 26px; background: var(--surface); box-shadow: var(--shadow-lg); overflow: auto; }
+.food-dialog::backdrop, .custom-food-dialog::backdrop, .custom-water-dialog::backdrop, .feature-dialog::backdrop { background: rgba(12,18,14,0.62); backdrop-filter: blur(5px); }
 .food-dialog > form:first-child { position: sticky; z-index: 2; top: 0; height: 0; }
 .dialog-close { position: absolute; top: 15px; right: 15px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); cursor: pointer; font-size: 23px; line-height: 1; }
 .food-dialog-inner { padding: 29px; }
@@ -612,6 +634,7 @@ dialog { color: var(--ink); }
 .favorite-button { display: inline-flex; align-items: center; gap: 6px; margin-top: 17px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 99px; background: transparent; color: var(--muted); cursor: pointer; font-size: 9px; font-weight: 750; }
 .favorite-button span { color: #d6a714; font-size: 14px; line-height: 1; }
 .favorite-button.is-favorite { border-color: color-mix(in srgb, #d6a714 50%, var(--line)); background: color-mix(in srgb, #f4cf58 15%, var(--surface)); color: var(--ink); }
+.healthier-swap { display: grid; gap: 7px; margin-bottom: 16px; padding: 13px; border-radius: 13px; background: color-mix(in srgb, var(--blue) 13%, var(--surface)); }.healthier-swap > span { color: var(--muted); font-size: 8px; font-weight: 800; text-transform: uppercase; }.healthier-swap button { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; text-align: left; }.healthier-swap strong, .healthier-swap small { display: block; }.healthier-swap strong { font-size: 10px; }.healthier-swap small { color: var(--muted); font-size: 8px; }.healthier-swap em { color: var(--muted); font-size: 7px; font-style: normal; }
 .nutrition-facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 24px 0; }
 .nutrition-facts div { padding: 12px 8px; border-radius: 12px; background: var(--surface-soft); text-align: center; }
 .nutrition-facts strong { display: block; font-size: 14px; }
@@ -627,6 +650,7 @@ dialog { color: var(--ink); }
 .dialog-heading h2 { margin: 4px 0 0; font-size: 26px; letter-spacing: -0.04em; }
 .dialog-heading .dialog-close { position: static; }
 .custom-food-form > .button { margin-top: 20px; }
+.custom-food-form > label { display: grid; gap: 7px; margin-top: 13px; color: var(--muted); font-size: 9px; font-weight: 700; }.feature-dialog-copy { color: var(--muted); font-size: 9px; line-height: 1.55; }.barcode-camera { position: relative; cursor: pointer; }.barcode-camera input { position: absolute; width: 1px; height: 1px; opacity: 0; }.feature-textarea { min-height: 130px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); resize: vertical; }.feature-result { display: grid; gap: 5px; margin-top: 13px; padding: 12px; border-radius: 11px; background: var(--surface-soft); color: var(--muted); font-size: 9px; line-height: 1.5; }.feature-result:empty { display: none; }.feature-result strong, .feature-result span, .feature-result small { display: block; }.feature-error { color: var(--coral); font-weight: 750; }
 
 /* Onboarding */
 .onboarding { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; min-height: 100vh; padding: 90px 20px 30px; overflow-y: auto; background: #17211b; color: white; }
@@ -682,6 +706,7 @@ dialog { color: var(--ink); }
   .log-layout { grid-template-columns: 1fr; }
   .log-aside { position: static; grid-template-columns: repeat(3, 1fr); }
   .today-log-card { grid-column: span 2; }
+  .template-card { grid-column: auto; }
 }
 
 @media (max-width: 860px) {
@@ -718,7 +743,8 @@ dialog { color: var(--ink); }
   .bottom-nav .coach-nav-item .nav-icon::after { display: none; }
   .view-heading { align-items: flex-start; }
   .today-grid, .insights-grid { grid-template-columns: 1fr; }
-  .calorie-card, .macro-card, .water-card, .recommendation-card, .meals-card, .insight-hero-card, .week-chart-card, .insight-stat, .nutrient-trends { grid-column: auto; }
+  .calorie-card, .macro-card, .water-card, .recommendation-card, .meals-card, .daily-plan-card, .discipline-card, .achievements-card, .insight-hero-card, .week-chart-card, .insight-stat, .nutrient-trends { grid-column: auto; }
+  .discipline-card { grid-template-columns: 1fr 1fr; }
   .meal-summary-list { grid-template-columns: repeat(2, 1fr); }
   .coach-app-layout { grid-template-columns: 1fr; }
   .coach-context-card { order: -1; }
@@ -730,6 +756,11 @@ dialog { color: var(--ink); }
 }
 
 @media (max-width: 600px) {
+  .quick-action-rail { grid-template-columns: repeat(4, minmax(78px, 1fr)); overflow-x: auto; }.quick-action-rail button { min-width: 78px; flex-direction: column; gap: 2px; }
+  .daily-plan-list, .achievement-grid { grid-template-columns: 1fr; }
+  .food-tool-grid { grid-template-columns: 1fr; }
+  .camera-buttons { display: grid; grid-template-columns: 1fr; width: 100%; }.camera-buttons .button { width: 100%; justify-content: center; }
+  .discipline-card { grid-template-columns: 1fr; }
   .reminder-grid { grid-template-columns: 1fr; }
   .section-shell, .site-header, .legal-shell { width: calc(100% - 28px); }
   .site-header { padding-block: 14px; }

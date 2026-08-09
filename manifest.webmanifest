@@ -20,6 +20,7 @@
   "shortcuts": [
     { "name": "Today", "short_name": "Today", "url": "app.html#today", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Log food", "short_name": "Log", "url": "app.html#log", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Ask Coach", "short_name": "Coach", "url": "app.html#coach", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Ask Coach", "short_name": "Coach", "url": "app.html#coach", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Plan meals", "short_name": "Plan", "url": "app.html#today", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

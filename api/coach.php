@@ -78,12 +78,19 @@ $contextInput = is_array($body['context'] ?? null) ? $body['context'] : [];
 $totalsInput = is_array($contextInput['totals'] ?? null) ? $contextInput['totals'] : [];
 $targetsInput = is_array($contextInput['targets'] ?? null) ? $contextInput['targets'] : [];
 $remainingInput = is_array($contextInput['remaining'] ?? null) ? $contextInput['remaining'] : [];
+$preferencesInput = is_array($contextInput['preferences'] ?? null) ? $contextInput['preferences'] : [];
 
 $number = static fn (mixed $value): float => round(max(0, min(100000, (float) $value)), 1);
 $context = [
     'goal' => substr((string) ($contextInput['goal'] ?? 'maintain'), 0, 30),
     'diet' => substr((string) ($contextInput['diet'] ?? 'omnivore'), 0, 30),
     'allergens' => substr((string) ($contextInput['allergens'] ?? 'none declared'), 0, 200),
+    'preferences' => [
+        'dislikes' => substr((string) ($preferencesInput['dislikes'] ?? 'none'), 0, 200),
+        'meal_times' => substr((string) ($preferencesInput['mealTimes'] ?? 'not set'), 0, 100),
+        'cook_time' => substr((string) ($preferencesInput['cookTime'] ?? 'quick'), 0, 30),
+        'budget' => substr((string) ($preferencesInput['budget'] ?? 'balanced'), 0, 30),
+    ],
     'totals' => [
         'calories_kcal' => $number($totalsInput['calories'] ?? 0),
         'protein_g' => $number($totalsInput['protein'] ?? 0),
@@ -124,6 +131,7 @@ Purpose:
 - Help the user make practical food and hydration choices using the supplied daily summary.
 - Explain why a suggestion fits the remaining calories, protein, fibre, hydration, dietary pattern, and declared allergens.
 - Prefer ordinary, accessible foods and flexible portions. Give at most three options unless asked for more.
+- Respect the supplied dislikes, meal times, cooking-time preference, and food budget.
 - Use warm, disciplined, non-judgmental language. Keep routine answers under 140 words.
 
 Safety:

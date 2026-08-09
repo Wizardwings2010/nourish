@@ -109,6 +109,10 @@
     if (/how are you|who are you|what can you do/.test(text)) {
       return `I am doing well and ready to help, ${firstName}. I am the private offline version of Nourish Coach, so I use your logs on this phone instead of sending them to an online AI. I can discuss meals, hunger, protein, fibre, hydration, calories, and Indian food choices.`;
     }
+    if (/remember|preference|budget|cook time|cooking time|dislike|meal time/.test(text)) {
+      const profile = state.profile || {};
+      return `I remember the preferences saved in Profile: ${profile.dislikes ? `avoid ${profile.dislikes}; ` : ""}${profile.cookTime === "quick" ? "prefer meals under 15 minutes; " : profile.cookTime === "medium" ? "prefer meals within 30 minutes; " : "cooking time is flexible; "}${profile.budget === "budget" ? "keep choices budget-conscious" : "use a balanced food budget"}${profile.mealTimes ? `; usual meal times are ${profile.mealTimes}` : ""}. You can change these anytime in Coach memory.`;
+    }
     if (/what (did|have) i (eat|log)|show.*log|today.s food/.test(text)) {
       const today = window.Nourish.storage.getDayKey();
       const names = state.logs.filter((entry) => entry.date === today).map((entry) => window.Nourish.nutrition.getFood(entry.foodId)).filter(Boolean).map((food) => food.name);

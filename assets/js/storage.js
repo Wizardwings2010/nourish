@@ -26,6 +26,12 @@
       waterLogs: [],
       customFoods: [],
       favoriteFoodIds: [],
+      mealTemplates: [],
+      dailyPlans: [],
+      shoppingList: [],
+      weightLogs: [],
+      measurementLogs: [],
+      progressPhotos: [],
       coachMessages: [],
       settings: {
         theme: "system",
@@ -44,6 +50,12 @@
     clean.waterLogs = Array.isArray(candidate.waterLogs) ? candidate.waterLogs.filter((item) => item && item.id && item.date && Number(item.amount) > 0) : [];
     clean.customFoods = Array.isArray(candidate.customFoods) ? candidate.customFoods.filter((item) => item && item.id && item.name) : [];
     clean.favoriteFoodIds = Array.isArray(candidate.favoriteFoodIds) ? candidate.favoriteFoodIds.filter((item) => typeof item === "string").slice(0, 500) : [];
+    clean.mealTemplates = Array.isArray(candidate.mealTemplates) ? candidate.mealTemplates.filter((item) => item && item.id && item.name && Array.isArray(item.items)).slice(0, 100) : [];
+    clean.dailyPlans = Array.isArray(candidate.dailyPlans) ? candidate.dailyPlans.filter((item) => item && item.date && Array.isArray(item.items)).slice(-14) : [];
+    clean.shoppingList = Array.isArray(candidate.shoppingList) ? candidate.shoppingList.filter((item) => item && item.id && item.name).slice(0, 300) : [];
+    clean.weightLogs = Array.isArray(candidate.weightLogs) ? candidate.weightLogs.filter((item) => item && item.id && Number(item.weight) > 0).slice(-365) : [];
+    clean.measurementLogs = Array.isArray(candidate.measurementLogs) ? candidate.measurementLogs.filter((item) => item && item.id).slice(-365) : [];
+    clean.progressPhotos = Array.isArray(candidate.progressPhotos) ? candidate.progressPhotos.filter((item) => item && item.id && item.dataUrl).slice(-12) : [];
     clean.coachMessages = Array.isArray(candidate.coachMessages) ? candidate.coachMessages.filter((item) => item && ["user", "assistant"].includes(item.role) && typeof item.content === "string").slice(-30) : [];
     clean.settings = Object.assign(clean.settings, candidate.settings || {});
     clean.settings.hydrationReminder = Object.assign(freshState().settings.hydrationReminder, candidate.settings && candidate.settings.hydrationReminder || {});
@@ -108,6 +120,53 @@
       const id = String(foodId || "");
       if (!id) return save();
       state.favoriteFoodIds = state.favoriteFoodIds.includes(id) ? state.favoriteFoodIds.filter((item) => item !== id) : state.favoriteFoodIds.concat(id);
+      return save();
+    },
+    addMealTemplate(template) {
+      state.mealTemplates.push(Object.assign({ id: uid("template"), createdAt: new Date().toISOString() }, template));
+      return save();
+    },
+    removeMealTemplate(id) {
+      state.mealTemplates = state.mealTemplates.filter((item) => item.id !== id);
+      return save();
+    },
+    setDailyPlan(plan) {
+      state.dailyPlans = state.dailyPlans.filter((item) => item.date !== plan.date).concat(Object.assign({}, plan, { createdAt: new Date().toISOString() })).slice(-14);
+      return save();
+    },
+    setShoppingList(items) {
+      state.shoppingList = (items || []).slice(0, 300);
+      return save();
+    },
+    addShoppingItem(name, category) {
+      state.shoppingList.push({ id: uid("shop"), name: String(name).trim(), category: category || "Pantry", checked: false });
+      return save();
+    },
+    toggleShoppingItem(id) {
+      state.shoppingList = state.shoppingList.map((item) => item.id === id ? Object.assign({}, item, { checked: !item.checked }) : item);
+      return save();
+    },
+    removeShoppingItem(id) {
+      state.shoppingList = state.shoppingList.filter((item) => item.id !== id);
+      return save();
+    },
+    addWeight(weight) {
+      state.weightLogs.push({ id: uid("weight"), weight: Number(weight), date: localDayKey(), createdAt: new Date().toISOString() });
+      state.weightLogs = state.weightLogs.slice(-365);
+      return save();
+    },
+    addMeasurements(values) {
+      state.measurementLogs.push(Object.assign({ id: uid("measure"), date: localDayKey(), createdAt: new Date().toISOString() }, values));
+      state.measurementLogs = state.measurementLogs.slice(-365);
+      return save();
+    },
+    addProgressPhoto(dataUrl) {
+      const previous = state.progressPhotos.slice();
+      state.progressPhotos = previous.concat({ id: uid("photo"), dataUrl, date: localDayKey(), createdAt: new Date().toISOString() }).slice(-12);
+      try { return save(); } catch (error) { state.progressPhotos = previous; throw error; }
+    },
+    removeProgressPhoto(id) {
+      state.progressPhotos = state.progressPhotos.filter((item) => item.id !== id);
       return save();
     },
     addCoachMessage(role, content, source) {

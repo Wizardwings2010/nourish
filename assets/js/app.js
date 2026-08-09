@@ -309,6 +309,7 @@
       </div>
       <div class="portion-control"><label><span>Portion multiplier</span><span class="portion-stepper"><button type="button" data-portion-minus aria-label="Decrease portion">−</button><input name="portion" type="number" min="0.25" max="10" step="0.25" value="1" aria-label="Portion multiplier"><button type="button" data-portion-plus aria-label="Increase portion">+</button></span></label><label><span>Meal</span><select class="select-input" name="meal"><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select></label></div>
       <div class="dialog-impact" data-dialog-impact>This serving uses ${formatNumber(food.calories)} of roughly ${formatNumber(remainingCalories)} remaining calories.</div>
+      ${N.features ? N.features.swapMarkup(food) : ""}
       <button class="button button-primary button-full" type="submit">Add to today</button>
     </form>`;
     const form = $("[data-add-food-form]", content);
@@ -431,6 +432,12 @@
     document.addEventListener("click", async (event) => {
       const foodCardButton = event.target.closest("[data-food-id]");
       if (foodCardButton) openFood(foodCardButton.dataset.foodId);
+      const swapButton = event.target.closest("[data-swap-food]");
+      if (swapButton) {
+        const dialog = $("[data-food-dialog]");
+        if (dialog && dialog.open) dialog.close();
+        openFood(swapButton.dataset.swapFood);
+      }
 
       const waterButton = event.target.closest("[data-add-water]");
       if (waterButton) {
@@ -455,6 +462,7 @@
       if (event.target.closest("[data-create-food]")) $("[data-custom-food-dialog]").showModal();
       if (event.target.closest("[data-close-custom]")) $("[data-custom-food-dialog]").close();
       if (event.target.closest("[data-custom-water]")) $("[data-custom-water-dialog]").showModal();
+      if (event.target.closest("[data-open-custom-water]")) $("[data-custom-water-dialog]").showModal();
       if (event.target.closest("[data-close-custom-water]")) $("[data-custom-water-dialog]").close();
 
       const filterButton = event.target.closest("[data-filter]");
@@ -515,6 +523,7 @@
       const previous = N.storage.getState().profile;
       const profile = Object.assign({}, previous, {
         name: String(values.name).trim(), age: Number(values.age), height: Number(values.height), weight: Number(values.weight), goal: values.goal, diet: values.diet, allergies: String(values.allergies || "").trim(),
+        dislikes: String(values.dislikes || "").trim(), mealTimes: String(values.mealTimes || "").trim(), cookTime: values.cookTime || "quick", budget: values.budget || "balanced",
         targets: Object.assign({}, previous.targets, { calories: Number(values.calories), protein: Number(values.protein), fiber: Number(values.fiber), water: Number(values.water) })
       });
       N.storage.setProfile(profile);

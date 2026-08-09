@@ -83,7 +83,9 @@
     if (diet === "vegan" && !(food.diets || []).includes("vegan")) return false;
     if (diet === "vegetarian" && !((food.diets || []).includes("vegetarian") || (food.diets || []).includes("vegan"))) return false;
     const allergies = String(profile.allergies || "").toLowerCase().split(",").map((item) => item.trim()).filter(Boolean);
-    return !(food.allergens || []).some((allergen) => allergies.some((declared) => allergen.includes(declared) || declared.includes(allergen)));
+    if ((food.allergens || []).some((allergen) => allergies.some((declared) => allergen.includes(declared) || declared.includes(allergen)))) return false;
+    const dislikes = String(profile.dislikes || "").toLowerCase().split(",").map((item) => item.trim()).filter(Boolean);
+    return !dislikes.some((dislike) => `${food.name} ${food.category} ${(food.tags || []).join(" ")}`.toLowerCase().includes(dislike));
   }
 
   function recommendationReason(food, gaps) {
@@ -160,6 +162,7 @@
       goal: profile.goal || "maintain",
       diet: profile.diet || "omnivore",
       allergens: profile.allergies || "none declared",
+      preferences: { dislikes: profile.dislikes || "none", mealTimes: profile.mealTimes || "not set", cookTime: profile.cookTime || "quick", budget: profile.budget || "balanced" },
       totals,
       targets,
       remaining: {
