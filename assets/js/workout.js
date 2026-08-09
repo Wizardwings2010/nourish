@@ -84,6 +84,23 @@
     return "lift";
   }
 
+  function formDemoSvg(profile) {
+    const cycle = "2.4s";
+    const motions = {
+      squat: `<g><animateTransform attributeName="transform" type="translate" values="0 0;0 30;0 0" dur="${cycle}" repeatCount="indefinite"/><line class="limb" x1="75" y1="89" x2="48" y2="133"><animate attributeName="x2" values="48;35;48" dur="${cycle}" repeatCount="indefinite"/></line><line class="limb" x1="75" y1="89" x2="102" y2="133"><animate attributeName="x2" values="102;115;102" dur="${cycle}" repeatCount="indefinite"/></line><line class="limb" x1="75" y1="48" x2="46" y2="80"/><line class="limb" x1="75" y1="48" x2="104" y2="80"/>${bodySvg()}</g>`,
+      press: `<g>${bodySvg()}<line class="limb" x1="71" y1="52" x2="43" y2="72"><animate attributeName="y2" values="72;22;72" dur="${cycle}" repeatCount="indefinite"/></line><line class="limb" x1="79" y1="52" x2="107" y2="72"><animate attributeName="y2" values="72;22;72" dur="${cycle}" repeatCount="indefinite"/></line><line class="bar" x1="33" y1="75" x2="117" y2="75"><animate attributeName="y1" values="75;25;75" dur="${cycle}" repeatCount="indefinite"/><animate attributeName="y2" values="75;25;75" dur="${cycle}" repeatCount="indefinite"/></line>${legsSvg()}</g>`,
+      pull: `<g>${bodySvg()}<line class="bar" x1="25" y1="18" x2="125" y2="18"/><line class="limb" x1="71" y1="52" x2="48" y2="20"><animate attributeName="y1" values="52;35;52" dur="${cycle}" repeatCount="indefinite"/></line><line class="limb" x1="79" y1="52" x2="102" y2="20"><animate attributeName="y1" values="52;35;52" dur="${cycle}" repeatCount="indefinite"/></line><g><animateTransform attributeName="transform" type="translate" values="0 18;0 0;0 18" dur="${cycle}" repeatCount="indefinite"/>${legsSvg()}</g></g>`,
+      core: `<g transform="translate(0 38) rotate(75 75 75)">${bodySvg()}${legsSvg()}<line class="limb" x1="73" y1="55" x2="105" y2="50"/><animateTransform attributeName="transform" additive="sum" type="rotate" values="0 75 75;-24 75 75;0 75 75" dur="${cycle}" repeatCount="indefinite"/></g>`,
+      flow: `<g><animateTransform attributeName="transform" type="rotate" values="-8 75 95;12 75 95;-8 75 95" dur="3.4s" repeatCount="indefinite"/>${bodySvg()}<line class="limb" x1="72" y1="54" x2="38" y2="35"/><line class="limb" x1="78" y1="54" x2="112" y2="35"/>${legsSvg()}</g>`,
+      cardio: `<g>${bodySvg()}<line class="limb" x1="72" y1="54" x2="45" y2="75"><animate attributeName="x2" values="45;100;45" dur="1.1s" repeatCount="indefinite"/></line><line class="limb" x1="78" y1="54" x2="105" y2="75"><animate attributeName="x2" values="105;50;105" dur="1.1s" repeatCount="indefinite"/></line><line class="limb" x1="74" y1="90" x2="48" y2="135"><animate attributeName="x2" values="48;102;48" dur="1.1s" repeatCount="indefinite"/></line><line class="limb" x1="76" y1="90" x2="102" y2="135"><animate attributeName="x2" values="102;48;102" dur="1.1s" repeatCount="indefinite"/></line></g>`,
+      lift: `<g><animateTransform attributeName="transform" type="translate" values="0 14;0 -10;0 14" dur="${cycle}" repeatCount="indefinite"/>${bodySvg()}<line class="limb" x1="70" y1="57" x2="47" y2="92"/><line class="limb" x1="80" y1="57" x2="103" y2="92"/><line class="bar" x1="37" y1="94" x2="113" y2="94"/>${legsSvg()}</g>`
+    };
+    return `<svg class="form-svg" viewBox="0 0 150 160" role="img" aria-label="Animated exercise form demonstration"><line class="floor" x1="18" y1="143" x2="132" y2="143"/>${motions[profile] || motions.lift}</svg>`;
+  }
+
+  function bodySvg() { return '<circle class="head" cx="75" cy="28" r="14"/><line class="torso" x1="75" y1="43" x2="75" y2="91"/>'; }
+  function legsSvg() { return '<line class="limb" x1="75" y1="89" x2="52" y2="137"/><line class="limb" x1="75" y1="89" x2="98" y2="137"/>'; }
+
   function suggestedExercises() {
     const schedule = todaySchedule();
     const types = state().profile.types.length ? state().profile.types : ["strength"];
@@ -169,7 +186,7 @@
     const profile = state().profile; const plan = prescription(exercise, profile);
     $("[data-exercise-dialog-content]").innerHTML = `<div class="exercise-detail"><div class="exercise-detail-visual"><div class="exercise-figure-3d type-${escapeHtml(exercise.type)}"><span></span><i></i><b></b><em></em></div><small>Illustrative movement guide</small></div><div class="exercise-detail-copy"><span class="card-kicker">${escapeHtml(typeLabels[exercise.type] || exercise.type)}</span><h2>${escapeHtml(exercise.name)}</h2><div class="exercise-tags"><span>${escapeHtml(exercise.muscle)}</span><span>${escapeHtml(exercise.equipment)}</span><span>${escapeHtml(exercise.level)}</span></div><p>${escapeHtml(exercise.cue)}</p><div class="exercise-prescription"><div><strong>${plan.sets}</strong><small>sets</small></div><div><strong>${escapeHtml(plan.reps)}</strong><small>reps / time</small></div><div><strong>${plan.rest}s</strong><small>rest</small></div></div><ol><li>Set up the equipment and choose a manageable starting resistance.</li><li>Brace, breathe and complete each repetition without rushing.</li><li>End the set with one or two good repetitions still possible when learning.</li></ol><button class="button button-primary button-full" type="button" data-add-workout-exercise="${escapeHtml(exercise.id)}">Add to today’s plan</button></div></div>`;
     const demo = $(".exercise-figure-3d", $("[data-exercise-dialog-content]"));
-    demo.classList.add(`motion-${motionProfile(exercise)}`); demo.dataset.formDemo = "";
+    demo.classList.add(`motion-${motionProfile(exercise)}`); demo.dataset.formDemo = ""; demo.innerHTML = formDemoSvg(motionProfile(exercise));
     demo.insertAdjacentHTML("afterend", '<small>Looped form guide · slow and controlled</small><button class="demo-control" type="button" data-toggle-form-demo>Pause animation</button>');
     $("[data-exercise-dialog]").showModal();
   }
@@ -216,7 +233,7 @@
       const toggle = event.target.closest("[data-toggle-workout-exercise]"); if (toggle) updatePlan((items) => { const item = items.find((entry) => entry.exerciseId === toggle.dataset.toggleWorkoutExercise); if (item) item.done = !item.done; });
       const remove = event.target.closest("[data-remove-workout-exercise]"); if (remove) updatePlan((items) => { const index = items.findIndex((entry) => entry.exerciseId === remove.dataset.removeWorkoutExercise); if (index >= 0) items.splice(index, 1); });
       if (event.target.closest("[data-finish-workout]")) finishWorkout();
-      const demoToggle = event.target.closest("[data-toggle-form-demo]"); if (demoToggle) { const demo = $("[data-form-demo]"); demo.classList.toggle("is-paused"); demoToggle.textContent = demo.classList.contains("is-paused") ? "Play animation" : "Pause animation"; }
+      const demoToggle = event.target.closest("[data-toggle-form-demo]"); if (demoToggle) { const demo = $("[data-form-demo]"); const svg = $("svg", demo); demo.classList.toggle("is-paused"); if (demo.classList.contains("is-paused")) svg.pauseAnimations(); else svg.unpauseAnimations(); demoToggle.textContent = demo.classList.contains("is-paused") ? "Play animation" : "Pause animation"; }
       if (event.target.closest("[data-open-custom-exercise]")) $("[data-custom-exercise-dialog]").showModal();
       if (event.target.closest("[data-close-workout-dialog]")) event.target.closest("dialog").close();
       if (event.target.closest("[data-exercise-more]")) { catalogLimit += 24; renderCatalog(); }
