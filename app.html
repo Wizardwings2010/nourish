@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="assets/css/styles.css?v=2.0.0">
+  <link rel="stylesheet" href="assets/css/styles.css?v=2.1.0">
   <script src="assets/js/data.js?v=2.0.0" defer></script>
   <script src="assets/js/foods-expanded.js?v=2.0.0" defer></script>
   <script src="assets/js/workout-data.js?v=2.0.0" defer></script>
@@ -20,8 +20,8 @@
   <script src="assets/js/camera.js?v=2.0.0" defer></script>
   <script src="assets/js/reminders.js?v=2.0.0" defer></script>
   <script src="assets/js/features.js?v=2.0.0" defer></script>
-  <script src="assets/js/workout.js?v=2.0.0" defer></script>
-  <script src="assets/js/app.js?v=2.0.0" defer></script>
+  <script src="assets/js/workout.js?v=2.1.0" defer></script>
+  <script src="assets/js/app.js?v=2.1.0" defer></script>
 </head>
 <body class="app-page">
   <a class="skip-link" href="#app-main">Skip to content</a>
@@ -233,6 +233,8 @@
             <button class="button button-dark" type="button" data-generate-workout>Build session <span aria-hidden="true">→</span></button>
           </article>
 
+          <section class="workout-suggestions" aria-labelledby="suggested-exercises-title"><div class="workout-section-head"><div><span class="card-kicker">Picked for your split</span><h2 id="suggested-exercises-title">Suggested exercises</h2></div><small data-suggestion-reason>Based on today’s focus and your training style</small></div><div class="suggested-exercise-rail" data-workout-suggestions></div></section>
+
           <div class="workout-layout">
             <div class="workout-main">
               <section class="workout-panel" aria-labelledby="workout-plan-title"><div class="workout-section-head"><div><span class="card-kicker">Follow along</span><h2 id="workout-plan-title">Today’s exercise plan</h2></div><div class="workout-plan-actions"><button type="button" data-edit-workout-plan>Edit plan</button><button class="button button-primary button-compact" type="button" data-finish-workout>Finish workout</button></div></div><div class="generated-workout" data-generated-workout></div></section>
@@ -279,10 +281,11 @@
         </section>
 
         <section class="app-view" data-view="insights" aria-labelledby="insights-title" hidden>
-          <header class="view-heading">
-            <div><p class="date-label">YOUR PATTERNS</p><h1 id="insights-title">Progress, without pressure.</h1><p>Look for rhythms you can repeat—not perfect days.</p></div>
+          <header class="view-heading insights-heading">
+            <div><p class="date-label">YOUR PATTERNS</p><h1 id="insights-title">A clearer view of <em>your week.</em></h1><p>See what is working, what needs attention, and one useful next move.</p></div><div class="insights-period" aria-label="Insights period"><span class="is-active">7 days</span><span>Personal trend</span></div>
           </header>
           <div class="insights-grid">
+            <article class="dashboard-card weekly-brief-card"><div><span class="card-kicker">Weekly brief</span><h2 data-weekly-focus>Build your first pattern</h2><p data-weekly-focus-copy>Log meals and water to reveal your clearest next step.</p></div><span class="brief-orb" aria-hidden="true"><i></i></span></article>
             <article class="dashboard-card discipline-card"><div><span class="card-kicker">Discipline score</span><h2><span data-discipline-score>0</span><small>/100</small></h2><p data-discipline-copy>Start logging to build your score.</p></div><div class="discipline-breakdown" data-discipline-breakdown></div></article>
             <article class="dashboard-card achievements-card"><div class="card-heading"><div><span class="card-kicker">Milestones</span><h2>Your achievements</h2></div></div><div class="achievement-grid" data-achievements></div></article>
             <article class="dashboard-card insight-hero-card"><div><span class="card-kicker">Consistency score</span><h2 data-consistency-score>0%</h2><p data-consistency-copy>Log your first meal to begin your weekly picture.</p></div><div class="consistency-ring" data-consistency-ring role="progressbar" aria-label="Seven-day consistency score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-consistency-ring-text>0</span></div></article>

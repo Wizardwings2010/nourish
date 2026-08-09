@@ -379,6 +379,17 @@
       const completion = Math.min(100, N.nutrition.percent(value, target));
       return `<div class="trend-row"><span>${label}</span><div class="progress-track"><i style="width:${completion}%;background:${color}"></i></div><strong>${completion}%</strong></div>`;
     }).join("");
+    const focusHeading = $("[data-weekly-focus]");
+    if (focusHeading) {
+      const proteinRatio = averageProtein / Math.max(1, targets.protein); const waterRatio = averageWater / Math.max(1, targets.water);
+      const fiberAverage = activeDays.reduce((sum, day) => sum + day.totals.fiber, 0) / divisor; const fiberRatio = fiberAverage / Math.max(1, targets.fiber);
+      let heading = "Keep building your rhythm"; let copy = "Consistency beats perfection. Repeat the meals and routines that made healthy choices easier.";
+      if (!activeDays.length) { heading = "Build your first pattern"; copy = "Log meals and water to reveal your clearest next step."; }
+      else if (waterRatio < proteinRatio && waterRatio < fiberRatio) { heading = "Hydration is your easiest win"; copy = `Your seven-day average is ${(averageWater / 1000).toFixed(1)} L. Attach one glass of water to each meal.`; }
+      else if (proteinRatio < fiberRatio) { heading = "Give protein a steadier rhythm"; copy = `You are averaging ${formatNumber(averageProtein)} g. Add one familiar protein source to the meal that usually falls short.`; }
+      else { heading = "Make fibre the next small upgrade"; copy = `You are averaging ${formatNumber(fiberAverage)} g. Add fruit, vegetables, beans or whole grains once more each day.`; }
+      focusHeading.textContent = heading; $("[data-weekly-focus-copy]").textContent = copy;
+    }
   }
 
   function renderProfile() {

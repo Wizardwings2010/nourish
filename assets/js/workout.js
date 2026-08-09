@@ -73,6 +73,31 @@
 
   function exerciseById(id) { return allExercises().find((exercise) => exercise.id === id); }
 
+  function motionProfile(exercise) {
+    const name = exercise.name.toLowerCase();
+    if (/squat|lunge|step-up|chair pose|wall sit/.test(name)) return "squat";
+    if (/press|push-up|dip|fly/.test(name)) return "press";
+    if (/row|pull-up|pulldown|curl|deadlift/.test(name)) return "pull";
+    if (/plank|crunch|sit-up|boat pose/.test(name) || exercise.muscle === "core") return "core";
+    if (["yoga", "mobility", "pilates"].includes(exercise.type)) return "flow";
+    if (["cardio", "hiit"].includes(exercise.type)) return "cardio";
+    return "lift";
+  }
+
+  function suggestedExercises() {
+    const schedule = todaySchedule();
+    const types = state().profile.types.length ? state().profile.types : ["strength"];
+    const muscles = focusMuscles(schedule.focus);
+    return allExercises().filter((exercise) => types.includes(exercise.type) && (muscles.includes(exercise.muscle) || exercise.muscle === "full body")).sort((a, b) => Number(b.level === state().profile.experience) - Number(a.level === state().profile.experience)).slice(0, 8);
+  }
+
+  function renderSuggestions() {
+    const container = $("[data-workout-suggestions]"); if (!container) return;
+    const schedule = todaySchedule();
+    $("[data-suggestion-reason]").textContent = `${schedule.focus || "Full body"} · ${state().profile.experience} · ${state().profile.types.map((type) => typeLabels[type] || type).join(" + ")}`;
+    container.innerHTML = suggestedExercises().map((exercise) => `<article><div class="exercise-motion-icon type-${escapeHtml(exercise.type)}" aria-hidden="true"><i></i><b></b></div><small>${escapeHtml(exercise.muscle)}</small><strong>${escapeHtml(exercise.name)}</strong><div><button type="button" data-exercise-details="${escapeHtml(exercise.id)}">See form</button><button type="button" data-add-workout-exercise="${escapeHtml(exercise.id)}">＋</button></div></article>`).join("");
+  }
+
   function renderHero() {
     const schedule = todaySchedule();
     const plan = currentPlan();
@@ -143,6 +168,9 @@
     const exercise = exerciseById(id); if (!exercise) return;
     const profile = state().profile; const plan = prescription(exercise, profile);
     $("[data-exercise-dialog-content]").innerHTML = `<div class="exercise-detail"><div class="exercise-detail-visual"><div class="exercise-figure-3d type-${escapeHtml(exercise.type)}"><span></span><i></i><b></b><em></em></div><small>Illustrative movement guide</small></div><div class="exercise-detail-copy"><span class="card-kicker">${escapeHtml(typeLabels[exercise.type] || exercise.type)}</span><h2>${escapeHtml(exercise.name)}</h2><div class="exercise-tags"><span>${escapeHtml(exercise.muscle)}</span><span>${escapeHtml(exercise.equipment)}</span><span>${escapeHtml(exercise.level)}</span></div><p>${escapeHtml(exercise.cue)}</p><div class="exercise-prescription"><div><strong>${plan.sets}</strong><small>sets</small></div><div><strong>${escapeHtml(plan.reps)}</strong><small>reps / time</small></div><div><strong>${plan.rest}s</strong><small>rest</small></div></div><ol><li>Set up the equipment and choose a manageable starting resistance.</li><li>Brace, breathe and complete each repetition without rushing.</li><li>End the set with one or two good repetitions still possible when learning.</li></ol><button class="button button-primary button-full" type="button" data-add-workout-exercise="${escapeHtml(exercise.id)}">Add to today’s plan</button></div></div>`;
+    const demo = $(".exercise-figure-3d", $("[data-exercise-dialog-content]"));
+    demo.classList.add(`motion-${motionProfile(exercise)}`); demo.dataset.formDemo = "";
+    demo.insertAdjacentHTML("afterend", '<small>Looped form guide · slow and controlled</small><button class="demo-control" type="button" data-toggle-form-demo>Pause animation</button>');
     $("[data-exercise-dialog]").showModal();
   }
 
@@ -178,7 +206,7 @@
     container.innerHTML = logs.length ? logs.map((log) => `<div class="workout-history-row"><span>◆</span><div><strong>${escapeHtml(log.focus)}</strong><small>${escapeHtml(log.date)} · ${log.completedCount} exercises · ${log.duration} min</small></div></div>`).join("") : '<div class="feature-empty compact">Completed workouts will appear here.</div>';
   }
 
-  function render() { if (!$("[data-view='workout']")) return; renderHero(); renderPlan(); renderProfile(); renderSchedule(); renderCatalog(); renderHistory(); }
+  function render() { if (!$("[data-view='workout']")) return; renderHero(); renderPlan(); renderProfile(); renderSchedule(); renderCatalog(); renderSuggestions(); renderHistory(); }
 
   function bind() {
     document.addEventListener("click", (event) => {
@@ -188,6 +216,7 @@
       const toggle = event.target.closest("[data-toggle-workout-exercise]"); if (toggle) updatePlan((items) => { const item = items.find((entry) => entry.exerciseId === toggle.dataset.toggleWorkoutExercise); if (item) item.done = !item.done; });
       const remove = event.target.closest("[data-remove-workout-exercise]"); if (remove) updatePlan((items) => { const index = items.findIndex((entry) => entry.exerciseId === remove.dataset.removeWorkoutExercise); if (index >= 0) items.splice(index, 1); });
       if (event.target.closest("[data-finish-workout]")) finishWorkout();
+      const demoToggle = event.target.closest("[data-toggle-form-demo]"); if (demoToggle) { const demo = $("[data-form-demo]"); demo.classList.toggle("is-paused"); demoToggle.textContent = demo.classList.contains("is-paused") ? "Play animation" : "Pause animation"; }
       if (event.target.closest("[data-open-custom-exercise]")) $("[data-custom-exercise-dialog]").showModal();
       if (event.target.closest("[data-close-workout-dialog]")) event.target.closest("dialog").close();
       if (event.target.closest("[data-exercise-more]")) { catalogLimit += 24; renderCatalog(); }
