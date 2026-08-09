@@ -9,6 +9,9 @@
 
   const typeLabels = { strength: "Weight lifting", calisthenics: "Calisthenics", yoga: "Yoga", pilates: "Pilates", cardio: "Cardio", hiit: "HIIT", mobility: "Mobility" };
   const dayOrder = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+  const formDbUrl = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json";
+  const formImageBase = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+  let formDbPromise = null;
 
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
@@ -100,6 +103,50 @@
 
   function bodySvg() { return '<circle class="head" cx="75" cy="28" r="14"/><line class="torso" x1="75" y1="43" x2="75" y2="91"/>'; }
   function legsSvg() { return '<line class="limb" x1="75" y1="89" x2="52" y2="137"/><line class="limb" x1="75" y1="89" x2="98" y2="137"/>'; }
+
+  function normalizedExerciseName(value) {
+    return String(value || "").toLowerCase().replace(/back squat/g, "barbell squat").replace(/standing overhead press/g, "military press").replace(/one-arm dumbbell row/g, "one arm dumbbell row").replace(/romanian deadlift/g, "stiff legged deadlift").replace(/\b(machine|exercise|alternating)\b/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+
+  function bestFormMatch(exercise, database) {
+    const wanted = normalizedExerciseName(exercise.name); const wantedTokens = wanted.split(" ").filter(Boolean);
+    let best = null; let bestScore = 0;
+    database.forEach((candidate) => {
+      if (!candidate.images || candidate.images.length < 2) return;
+      const candidateName = normalizedExerciseName(candidate.name);
+      if (candidateName === wanted) { best = candidate; bestScore = 2; return; }
+      if (bestScore >= 2 || wantedTokens.length < 2) return;
+      const candidateTokens = new Set(candidateName.split(" "));
+      const common = wantedTokens.filter((token) => candidateTokens.has(token)).length;
+      const score = common / wantedTokens.length;
+      if (score > bestScore) { best = candidate; bestScore = score; }
+    });
+    return bestScore >= 0.78 ? best : null;
+  }
+
+  function startPhotoSequence(container) {
+    const frames = $$("img", container); if (frames.length < 2 || !frames[0].animate) return;
+    const options = { duration: 2600, iterations: Infinity, easing: "ease-in-out" };
+    container._mediaAnimations = [
+      frames[0].animate([{ opacity: 1 }, { opacity: 1, offset: .42 }, { opacity: 0, offset: .58 }, { opacity: 0, offset: .9 }, { opacity: 1 }], options),
+      frames[1].animate([{ opacity: 0 }, { opacity: 0, offset: .42 }, { opacity: 1, offset: .58 }, { opacity: 1, offset: .9 }, { opacity: 0 }], options)
+    ];
+  }
+
+  async function loadExerciseMedia(exercise) {
+    const dialog = $("[data-exercise-dialog]"); const visual = $(".exercise-detail-visual", dialog);
+    visual.insertAdjacentHTML("beforeend", '<span class="form-media-loading">Finding exercise-specific form…</span>');
+    try {
+      if (!formDbPromise) formDbPromise = fetch(formDbUrl, { cache: "force-cache" }).then((response) => { if (!response.ok) throw new Error("Form library unavailable"); return response.json(); });
+      const database = await formDbPromise; const match = bestFormMatch(exercise, database);
+      if (!match || dialog.dataset.exerciseId !== exercise.id) { const status = $(".form-media-loading", visual); if (status) status.textContent = "Animated movement pattern"; return; }
+      const urls = match.images.slice(0, 2).map((path) => formImageBase + path.split("/").map(encodeURIComponent).join("/"));
+      visual.innerHTML = `<div class="exercise-photo-sequence" data-photo-sequence><img src="${escapeHtml(urls[0])}" alt="${escapeHtml(exercise.name)} starting position"><img src="${escapeHtml(urls[1])}" alt="${escapeHtml(exercise.name)} finishing position"></div><small>${escapeHtml(match.name)} · start and finish positions</small><button class="demo-control" type="button" data-toggle-photo-demo>Pause demonstration</button><a class="form-source-link" href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Public-domain form source</a>`;
+      startPhotoSequence($("[data-photo-sequence]", visual));
+    } catch (error) {
+      const status = $(".form-media-loading", visual); if (status) status.textContent = "Offline movement guide";
+    }
+  }
 
   function startFormAnimation(profile, demo) {
     const svg = $(".form-svg", demo); if (!svg || !svg.animate) return;
@@ -224,7 +271,7 @@
     const profileName = motionProfile(exercise);
     demo.classList.add(`motion-${profileName}`); demo.dataset.formDemo = ""; demo.innerHTML = formDemoSvg(profileName); startFormAnimation(profileName, demo);
     demo.insertAdjacentHTML("afterend", '<small>Looped form guide · slow and controlled</small><button class="demo-control" type="button" data-toggle-form-demo>Pause animation</button>');
-    $("[data-exercise-dialog]").showModal();
+    $("[data-exercise-dialog]").dataset.exerciseId = exercise.id; $("[data-exercise-dialog]").showModal(); loadExerciseMedia(exercise);
   }
 
   function updatePlan(mutator) {
@@ -270,6 +317,7 @@
       const remove = event.target.closest("[data-remove-workout-exercise]"); if (remove) updatePlan((items) => { const index = items.findIndex((entry) => entry.exerciseId === remove.dataset.removeWorkoutExercise); if (index >= 0) items.splice(index, 1); });
       if (event.target.closest("[data-finish-workout]")) finishWorkout();
       const demoToggle = event.target.closest("[data-toggle-form-demo]"); if (demoToggle) { const demo = $("[data-form-demo]"); demo.classList.toggle("is-paused"); (demo._formAnimations || []).forEach((animation) => demo.classList.contains("is-paused") ? animation.pause() : animation.play()); demoToggle.textContent = demo.classList.contains("is-paused") ? "Play animation" : "Pause animation"; }
+      const photoToggle = event.target.closest("[data-toggle-photo-demo]"); if (photoToggle) { const sequence = $("[data-photo-sequence]"); sequence.classList.toggle("is-paused"); (sequence._mediaAnimations || []).forEach((animation) => sequence.classList.contains("is-paused") ? animation.pause() : animation.play()); photoToggle.textContent = sequence.classList.contains("is-paused") ? "Play demonstration" : "Pause demonstration"; }
       if (event.target.closest("[data-open-custom-exercise]")) $("[data-custom-exercise-dialog]").showModal();
       if (event.target.closest("[data-close-workout-dialog]")) event.target.closest("dialog").close();
       if (event.target.closest("[data-exercise-more]")) { catalogLimit += 24; renderCatalog(); }
