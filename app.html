@@ -10,16 +10,18 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="assets/css/styles.css?v=1.6.0">
-  <script src="assets/js/data.js?v=1.6.0" defer></script>
-  <script src="assets/js/foods-expanded.js?v=1.6.0" defer></script>
-  <script src="assets/js/storage.js?v=1.6.0" defer></script>
-  <script src="assets/js/nutrition.js?v=1.6.0" defer></script>
-  <script src="assets/js/coach.js?v=1.6.0" defer></script>
-  <script src="assets/js/camera.js?v=1.6.0" defer></script>
-  <script src="assets/js/reminders.js?v=1.6.0" defer></script>
-  <script src="assets/js/features.js?v=1.6.0" defer></script>
-  <script src="assets/js/app.js?v=1.6.0" defer></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=2.0.0">
+  <script src="assets/js/data.js?v=2.0.0" defer></script>
+  <script src="assets/js/foods-expanded.js?v=2.0.0" defer></script>
+  <script src="assets/js/workout-data.js?v=2.0.0" defer></script>
+  <script src="assets/js/storage.js?v=2.0.0" defer></script>
+  <script src="assets/js/nutrition.js?v=2.0.0" defer></script>
+  <script src="assets/js/coach.js?v=2.0.0" defer></script>
+  <script src="assets/js/camera.js?v=2.0.0" defer></script>
+  <script src="assets/js/reminders.js?v=2.0.0" defer></script>
+  <script src="assets/js/features.js?v=2.0.0" defer></script>
+  <script src="assets/js/workout.js?v=2.0.0" defer></script>
+  <script src="assets/js/app.js?v=2.0.0" defer></script>
 </head>
 <body class="app-page">
   <a class="skip-link" href="#app-main">Skip to content</a>
@@ -93,6 +95,7 @@
       <nav class="side-nav" data-app-nav>
         <a href="#today" data-route="today"><span class="nav-icon icon-today" aria-hidden="true"></span><span>Today</span></a>
         <a href="#log" data-route="log"><span class="nav-icon icon-log" aria-hidden="true"></span><span>Log</span></a>
+        <a href="#workout" data-route="workout"><span class="nav-icon icon-workout" aria-hidden="true"></span><span>Workout</span></a>
         <a href="#coach" data-route="coach"><span class="nav-icon icon-coach" aria-hidden="true"></span><span>Coach</span></a>
         <a href="#insights" data-route="insights"><span class="nav-icon icon-insights" aria-hidden="true"></span><span>Insights</span></a>
         <a href="#profile" data-route="profile"><span class="nav-icon icon-profile" aria-hidden="true"></span><span>Profile</span></a>
@@ -219,6 +222,33 @@
           </div>
         </section>
 
+        <section class="app-view workout-view" data-view="workout" aria-labelledby="workout-title" hidden>
+          <header class="view-heading workout-heading">
+            <div><p class="date-label">TRAIN WITH PURPOSE</p><h1 id="workout-title">Your workout studio.</h1><p>Build a schedule, choose your training style and follow a plan made for today.</p></div><button class="button button-primary button-compact" type="button" data-generate-workout>Generate today’s plan</button>
+          </header>
+
+          <article class="workout-hero-card premium-tilt">
+            <div class="workout-orbit" aria-hidden="true"><i></i><i></i><span>MOVE</span></div>
+            <div class="workout-hero-copy"><span class="card-kicker">Today’s session</span><h2 data-workout-today-focus>Set your weekly schedule</h2><p data-workout-today-copy>Nourish will use today’s focus, your experience and available time.</p><div class="workout-hero-stats"><span><strong data-workout-week-count>0</strong><small>this week</small></span><span><strong data-workout-streak>0</strong><small>week streak</small></span><span><strong data-exercise-total>0</strong><small>exercises</small></span></div></div>
+            <button class="button button-dark" type="button" data-generate-workout>Build session <span aria-hidden="true">→</span></button>
+          </article>
+
+          <div class="workout-layout">
+            <div class="workout-main">
+              <section class="workout-panel" aria-labelledby="workout-plan-title"><div class="workout-section-head"><div><span class="card-kicker">Follow along</span><h2 id="workout-plan-title">Today’s exercise plan</h2></div><div class="workout-plan-actions"><button type="button" data-edit-workout-plan>Edit plan</button><button class="button button-primary button-compact" type="button" data-finish-workout>Finish workout</button></div></div><div class="generated-workout" data-generated-workout></div></section>
+
+              <section class="workout-panel exercise-library" aria-labelledby="exercise-library-title"><div class="workout-section-head"><div><span class="card-kicker">Exercise catalogue</span><h2 id="exercise-library-title">Find your next movement</h2></div><button class="button button-ghost button-compact" type="button" data-open-custom-exercise>+ Custom exercise</button></div><div class="exercise-search"><input type="search" placeholder="Search hundreds of exercises" aria-label="Search exercise catalogue" data-exercise-search><select aria-label="Filter exercise type" data-exercise-type><option value="all">All training types</option><option value="strength">Weight lifting</option><option value="calisthenics">Calisthenics</option><option value="yoga">Yoga</option><option value="pilates">Pilates</option><option value="cardio">Cardio</option><option value="hiit">HIIT</option><option value="mobility">Mobility</option></select><select aria-label="Filter muscle group" data-exercise-muscle><option value="all">All muscle groups</option><option value="chest">Chest</option><option value="back">Back</option><option value="legs">Legs</option><option value="quadriceps">Quadriceps</option><option value="shoulders">Shoulders</option><option value="biceps">Biceps</option><option value="triceps">Triceps</option><option value="core">Core</option><option value="full body">Full body</option></select></div><div class="exercise-count" data-exercise-count></div><div class="exercise-grid" data-exercise-grid></div><button class="catalog-load-more" type="button" data-exercise-more>Show more exercises</button></section>
+            </div>
+
+            <aside class="workout-aside">
+              <section class="workout-panel workout-setup"><div class="workout-section-head"><div><span class="card-kicker">Your training</span><h2>Workout preferences</h2></div></div><form data-workout-profile-form><label><span>Training style</span><div class="training-type-grid" data-training-types><label><input type="checkbox" value="strength"><span>Weight lifting</span></label><label><input type="checkbox" value="yoga"><span>Yoga</span></label><label><input type="checkbox" value="calisthenics"><span>Calisthenics</span></label><label><input type="checkbox" value="cardio"><span>Cardio</span></label><label><input type="checkbox" value="hiit"><span>HIIT</span></label><label><input type="checkbox" value="pilates"><span>Pilates</span></label><label><input type="checkbox" value="mobility"><span>Mobility</span></label></div></label><div class="form-grid two-col"><label><span>Primary goal</span><select class="select-input" name="goal"><option value="build-muscle">Build muscle</option><option value="strength">Get stronger</option><option value="fat-loss">Fat loss &amp; fitness</option><option value="flexibility">Flexibility</option><option value="general">General wellness</option></select></label><label><span>Experience</span><select class="select-input" name="experience"><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label><label class="span-two"><span>Session length</span><select class="select-input" name="duration"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option><option value="75">75 minutes</option><option value="90">90 minutes</option></select></label></div><button class="button button-dark button-full" type="submit">Save preferences</button></form></section>
+
+              <section class="workout-panel schedule-panel"><div class="workout-section-head"><div><span class="card-kicker">Fully customizable</span><h2>Weekly schedule</h2></div></div><form data-workout-schedule-form><div class="weekly-schedule" data-weekly-schedule></div><button class="button button-primary button-full" type="submit">Save weekly split</button></form></section>
+              <section class="workout-panel workout-history-card"><div class="workout-section-head"><div><span class="card-kicker">Consistency</span><h2>Recent sessions</h2></div></div><div data-workout-history></div></section>
+            </aside>
+          </div>
+        </section>
+
         <section class="app-view coach-view" data-view="coach" aria-labelledby="coach-title" hidden>
           <header class="view-heading coach-view-heading">
             <div><p class="date-label"><span class="coach-spark">✦</span> PERSONAL GUIDANCE</p><h1 id="coach-title">Nourish Coach</h1><p>Ask about your next meal, today’s gaps, or a better food choice.</p></div>
@@ -307,6 +337,7 @@
     <nav class="bottom-nav" aria-label="Nourish navigation" data-app-nav>
       <a href="#today" data-route="today"><span class="nav-icon icon-today" aria-hidden="true"></span><span>Today</span></a>
       <a href="#log" data-route="log"><span class="nav-icon icon-log" aria-hidden="true"></span><span>Log</span></a>
+      <a href="#workout" data-route="workout"><span class="nav-icon icon-workout" aria-hidden="true"></span><span>Workout</span></a>
       <a class="coach-nav-item" href="#coach" data-route="coach"><span class="nav-icon icon-coach" aria-hidden="true"></span><span>Coach</span></a>
       <a href="#insights" data-route="insights"><span class="nav-icon icon-insights" aria-hidden="true"></span><span>Insights</span></a>
       <a href="#profile" data-route="profile"><span class="nav-icon icon-profile" aria-hidden="true"></span><span>Profile</span></a>
@@ -370,6 +401,10 @@
       <div class="dialog-heading"><div><span class="card-kicker">One-tap logging</span><h2>Save today as a template</h2></div><button class="dialog-close" type="button" data-close-feature aria-label="Close meal template form">×</button></div><p class="feature-dialog-copy">Nourish will save the foods, portions and meal labels currently logged today.</p><label><span>Template name</span><input class="text-input" name="name" maxlength="50" value="My usual meal" required></label><button class="button button-primary button-full" type="submit">Save template</button>
     </form>
   </dialog>
+
+  <dialog class="feature-dialog exercise-dialog" data-exercise-dialog><form method="dialog"><button class="dialog-close" value="cancel" aria-label="Close exercise details">×</button></form><div data-exercise-dialog-content></div></dialog>
+
+  <dialog class="feature-dialog" data-custom-exercise-dialog><form class="custom-food-form" data-custom-exercise-form><div class="dialog-heading"><div><span class="card-kicker">Your movement</span><h2>Add custom exercise</h2></div><button class="dialog-close" type="button" data-close-workout-dialog aria-label="Close custom exercise form">×</button></div><div class="form-grid two-col"><label class="span-two"><span>Exercise name</span><input class="text-input" name="name" required maxlength="60"></label><label><span>Training type</span><select class="select-input" name="type"><option value="strength">Weight lifting</option><option value="yoga">Yoga</option><option value="calisthenics">Calisthenics</option><option value="cardio">Cardio</option><option value="hiit">HIIT</option><option value="mobility">Mobility</option></select></label><label><span>Muscle / focus</span><input class="text-input" name="muscle" required placeholder="e.g. chest"></label><label><span>Equipment</span><input class="text-input" name="equipment" placeholder="e.g. dumbbells"></label><label><span>Default sets</span><input class="text-input" name="sets" type="number" min="1" max="10" value="3"></label><label><span>Reps or time</span><input class="text-input" name="reps" value="8–12"></label><label class="span-two"><span>Technique cue</span><textarea class="feature-textarea" name="cue" maxlength="300"></textarea></label></div><button class="button button-primary button-full" type="submit">Save exercise</button></form></dialog>
 
   <div class="toast" role="status" aria-live="polite" data-toast></div>
 </body>

@@ -32,6 +32,16 @@
       weightLogs: [],
       measurementLogs: [],
       progressPhotos: [],
+      workout: {
+        profile: { types: ["strength"], goal: "build-muscle", experience: "beginner", duration: 60 },
+        schedule: [
+          { day: "monday", focus: "Chest & triceps", active: true }, { day: "tuesday", focus: "Back & biceps", active: true },
+          { day: "wednesday", focus: "Rest / mobility", active: false }, { day: "thursday", focus: "Legs", active: true },
+          { day: "friday", focus: "Shoulders & core", active: true }, { day: "saturday", focus: "Yoga or cardio", active: true },
+          { day: "sunday", focus: "Rest", active: false }
+        ],
+        plans: [], logs: [], customExercises: []
+      },
       coachMessages: [],
       settings: {
         theme: "system",
@@ -56,6 +66,13 @@
     clean.weightLogs = Array.isArray(candidate.weightLogs) ? candidate.weightLogs.filter((item) => item && item.id && Number(item.weight) > 0).slice(-365) : [];
     clean.measurementLogs = Array.isArray(candidate.measurementLogs) ? candidate.measurementLogs.filter((item) => item && item.id).slice(-365) : [];
     clean.progressPhotos = Array.isArray(candidate.progressPhotos) ? candidate.progressPhotos.filter((item) => item && item.id && item.dataUrl).slice(-12) : [];
+    const workout = candidate.workout && typeof candidate.workout === "object" ? candidate.workout : {};
+    clean.workout.profile = Object.assign({}, clean.workout.profile, workout.profile || {});
+    clean.workout.profile.types = Array.isArray(clean.workout.profile.types) ? clean.workout.profile.types.slice(0, 8) : ["strength"];
+    clean.workout.schedule = Array.isArray(workout.schedule) && workout.schedule.length ? workout.schedule.filter((item) => item && item.day).slice(0, 7) : clean.workout.schedule;
+    clean.workout.plans = Array.isArray(workout.plans) ? workout.plans.filter((item) => item && item.id && Array.isArray(item.exercises)).slice(-30) : [];
+    clean.workout.logs = Array.isArray(workout.logs) ? workout.logs.filter((item) => item && item.id && item.date).slice(-365) : [];
+    clean.workout.customExercises = Array.isArray(workout.customExercises) ? workout.customExercises.filter((item) => item && item.id && item.name).slice(0, 200) : [];
     clean.coachMessages = Array.isArray(candidate.coachMessages) ? candidate.coachMessages.filter((item) => item && ["user", "assistant"].includes(item.role) && typeof item.content === "string").slice(-30) : [];
     clean.settings = Object.assign(clean.settings, candidate.settings || {});
     clean.settings.hydrationReminder = Object.assign(freshState().settings.hydrationReminder, candidate.settings && candidate.settings.hydrationReminder || {});
@@ -168,6 +185,33 @@
     removeProgressPhoto(id) {
       state.progressPhotos = state.progressPhotos.filter((item) => item.id !== id);
       return save();
+    },
+    updateWorkoutProfile(profile) {
+      state.workout.profile = Object.assign({}, state.workout.profile, profile);
+      return save();
+    },
+    updateWorkoutSchedule(schedule) {
+      state.workout.schedule = (schedule || []).slice(0, 7);
+      return save();
+    },
+    saveWorkoutPlan(plan) {
+      const record = Object.assign({ id: uid("workout-plan"), createdAt: new Date().toISOString() }, plan);
+      state.workout.plans = state.workout.plans.filter((item) => item.date !== record.date).concat(record).slice(-30);
+      save();
+      return record;
+    },
+    addWorkoutLog(log) {
+      const record = Object.assign({ id: uid("workout"), date: localDayKey(), createdAt: new Date().toISOString() }, log);
+      state.workout.logs.push(record);
+      state.workout.logs = state.workout.logs.slice(-365);
+      save();
+      return record;
+    },
+    addCustomExercise(exercise) {
+      const record = Object.assign({ id: uid("exercise"), custom: true, createdAt: new Date().toISOString() }, exercise);
+      state.workout.customExercises.push(record);
+      save();
+      return record;
     },
     addCoachMessage(role, content, source) {
       state.coachMessages.push({ id: uid("chat"), role, content: String(content).slice(0, 4000), source: source || "local", createdAt: new Date().toISOString() });

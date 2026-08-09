@@ -4,7 +4,7 @@
   const N = window.Nourish;
   const $ = (selector, root) => (root || document).querySelector(selector);
   const $$ = (selector, root) => Array.from((root || document).querySelectorAll(selector));
-  const routes = ["today", "log", "coach", "insights", "profile"];
+  const routes = ["today", "log", "workout", "coach", "insights", "profile"];
   const mealLabels = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snacks" };
   let installPrompt = null;
   let activeFoodFilter = "all";
@@ -156,6 +156,7 @@
     document.title = `Nourish — ${title}`;
     if (route === "today") renderToday();
     if (route === "log") renderLog();
+    if (route === "workout" && N.workout) N.workout.render();
     if (route === "coach" && N.coach) N.coach.render();
     if (route === "insights") renderInsights();
     if (route === "profile") renderProfile();
