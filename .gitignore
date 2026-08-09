@@ -1,0 +1,4 @@
+nourish-secrets.php
+.env
+.env.*
+!.env.example

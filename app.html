@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f8f5">
+  <meta name="description" content="Your private Nourish nutrition dashboard for meals, hydration, nutrients, insights, and personalized food guidance.">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Nourish — Today</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="assets/css/styles.css?v=1.0.1">
+  <script src="assets/js/data.js?v=1.0.1" defer></script>
+  <script src="assets/js/storage.js?v=1.0.1" defer></script>
+  <script src="assets/js/nutrition.js?v=1.0.1" defer></script>
+  <script src="assets/js/coach.js?v=1.0.1" defer></script>
+  <script src="assets/js/app.js?v=1.0.1" defer></script>
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#app-main">Skip to content</a>
+
+  <div class="onboarding" data-onboarding hidden>
+    <div class="onboarding-brand"><span class="brand-mark" aria-hidden="true"><span>N</span></span><span>Nourish</span></div>
+    <div class="onboarding-progress" aria-label="Setup progress"><span data-progress-bar></span></div>
+    <form class="onboarding-card" data-onboarding-form novalidate>
+      <section class="onboarding-step is-active" data-step="1">
+        <p class="step-count">01 — Welcome</p>
+        <h1>Let’s shape Nourish<br>around <em>you.</em></h1>
+        <p>A few details help calculate useful starting targets. You can change every value later.</p>
+        <label class="field-label" for="setup-name">What should Nourish call you?</label>
+        <input class="text-input input-large" id="setup-name" name="name" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name" required>
+      </section>
+
+      <section class="onboarding-step" data-step="2" hidden>
+        <p class="step-count">02 — Your baseline</p>
+        <h1>A useful starting<br><em>point.</em></h1>
+        <p>These values estimate daily energy needs. They stay on this device.</p>
+        <div class="form-grid two-col">
+          <label><span>Age</span><input class="text-input" name="age" type="number" min="16" max="100" inputmode="numeric" placeholder="28" required></label>
+          <label><span>Sex used for estimate</span><select class="select-input" name="sex" required><option value="">Choose</option><option value="female">Female</option><option value="male">Male</option><option value="neutral">Use neutral estimate</option></select></label>
+          <label><span>Height (cm)</span><input class="text-input" name="height" type="number" min="120" max="230" inputmode="decimal" placeholder="172" required></label>
+          <label><span>Weight (kg)</span><input class="text-input" name="weight" type="number" min="35" max="250" step="0.1" inputmode="decimal" placeholder="70" required></label>
+        </div>
+        <label class="field-label" for="setup-activity">Typical activity</label>
+        <select class="select-input" id="setup-activity" name="activity" required>
+          <option value="">Choose your usual level</option>
+          <option value="sedentary">Mostly seated</option>
+          <option value="light">Light activity, 1–3 days/week</option>
+          <option value="moderate">Moderate activity, 3–5 days/week</option>
+          <option value="active">Very active, 6–7 days/week</option>
+        </select>
+      </section>
+
+      <section class="onboarding-step" data-step="3" hidden>
+        <p class="step-count">03 — Your direction</p>
+        <h1>What are we<br><em>working toward?</em></h1>
+        <div class="choice-grid" role="radiogroup" aria-label="Nutrition goal">
+          <label class="choice-card"><input type="radio" name="goal" value="lose" required><span><strong>Lose steadily</strong><small>A gentle calorie reduction</small></span></label>
+          <label class="choice-card"><input type="radio" name="goal" value="maintain"><span><strong>Maintain</strong><small>Support balance and consistency</small></span></label>
+          <label class="choice-card"><input type="radio" name="goal" value="gain"><span><strong>Build &amp; gain</strong><small>A controlled energy increase</small></span></label>
+        </div>
+        <div class="form-grid two-col">
+          <label><span>Eating style</span><select class="select-input" name="diet" required><option value="omnivore">Everything</option><option value="vegetarian">Vegetarian</option><option value="vegan">Vegan</option></select></label>
+          <label><span>Allergens to avoid</span><input class="text-input" name="allergies" type="text" placeholder="e.g. peanuts, milk"></label>
+        </div>
+      </section>
+
+      <section class="onboarding-step" data-step="4" hidden>
+        <p class="step-count">04 — Your daily targets</p>
+        <h1>Your first plan is<br><em>ready.</em></h1>
+        <p>These are editable wellness estimates, not medical prescriptions.</p>
+        <div class="target-preview" data-target-preview></div>
+        <label class="consent-check"><input type="checkbox" name="acknowledgement" required><span>I understand Nourish provides general estimates and is not medical advice.</span></label>
+      </section>
+
+      <div class="onboarding-actions">
+        <button class="button button-ghost" type="button" data-step-back hidden>Back</button>
+        <button class="button button-primary" type="button" data-step-next>Continue <span aria-hidden="true">→</span></button>
+        <button class="button button-primary" type="submit" data-step-finish hidden>Enter Nourish <span aria-hidden="true">→</span></button>
+      </div>
+      <p class="form-error" role="alert" data-onboarding-error></p>
+    </form>
+  </div>
+
+  <div class="app-shell" data-app-shell hidden>
+    <aside class="app-sidebar" aria-label="Nourish navigation">
+      <a class="brand" href="index.html" aria-label="Nourish home"><span class="brand-mark" aria-hidden="true"><span>N</span></span><span>Nourish</span></a>
+      <nav class="side-nav" data-app-nav>
+        <a href="#today" data-route="today"><span class="nav-icon icon-today" aria-hidden="true"></span><span>Today</span></a>
+        <a href="#log" data-route="log"><span class="nav-icon icon-log" aria-hidden="true"></span><span>Log</span></a>
+        <a href="#coach" data-route="coach"><span class="nav-icon icon-coach" aria-hidden="true"></span><span>Coach</span></a>
+        <a href="#insights" data-route="insights"><span class="nav-icon icon-insights" aria-hidden="true"></span><span>Insights</span></a>
+        <a href="#profile" data-route="profile"><span class="nav-icon icon-profile" aria-hidden="true"></span><span>Profile</span></a>
+      </nav>
+      <div class="sidebar-streak"><span class="streak-flame" aria-hidden="true">◆</span><div><strong data-streak-count>0 days</strong><small>Current rhythm</small></div></div>
+      <a class="sidebar-privacy" href="privacy.html">Privacy &amp; data</a>
+    </aside>
+
+    <div class="app-stage">
+      <header class="app-topbar">
+        <a class="brand mobile-brand" href="index.html"><span class="brand-mark" aria-hidden="true"><span>N</span></span><span>Nourish</span></a>
+        <div class="app-top-actions">
+          <span class="offline-badge" data-offline-badge hidden>Offline</span>
+          <button class="icon-button theme-button" type="button" aria-label="Toggle dark appearance" data-theme-toggle><span aria-hidden="true">◐</span></button>
+          <button class="mini-avatar avatar-button" type="button" aria-label="Open profile" data-open-profile>N</button>
+        </div>
+      </header>
+
+      <main id="app-main" class="app-main">
+        <section class="app-view" data-view="today" aria-labelledby="today-title">
+          <header class="view-heading">
+            <div><p class="date-label" data-today-date></p><h1 id="today-title">Good morning, <span data-user-name>there</span>.</h1><p data-daily-message>Small choices create strong days.</p></div>
+            <button class="button button-primary button-compact" type="button" data-quick-log><span aria-hidden="true">+</span> Log food</button>
+          </header>
+
+          <div class="today-grid">
+            <article class="dashboard-card calorie-card">
+              <div class="card-heading"><div><span class="card-kicker">Energy</span><h2>Daily calories</h2></div><span class="status-chip" data-calorie-status>On track</span></div>
+              <div class="calorie-layout">
+                <div class="calorie-ring" data-calorie-ring role="progressbar" aria-label="Daily calorie progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div><strong data-calorie-percent>0%</strong><span>complete</span></div></div>
+                <div class="calorie-numbers"><div><strong data-calories-eaten>0</strong><span>eaten</span></div><div><strong data-calories-left>0</strong><span>remaining</span></div><div><strong data-calorie-target>0</strong><span>target</span></div></div>
+              </div>
+            </article>
+
+            <article class="dashboard-card macro-card">
+              <div class="card-heading"><div><span class="card-kicker">Balance</span><h2>Daily nutrients</h2></div></div>
+              <div class="macro-list" data-macro-list></div>
+            </article>
+
+            <article class="dashboard-card water-card">
+              <div class="card-heading"><div><span class="card-kicker">Hydration</span><h2>Water</h2></div><strong data-water-summary>0 / 0 L</strong></div>
+              <div class="water-visual" role="progressbar" aria-label="Daily hydration progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-water-progress><div class="water-fill" data-water-fill></div><span class="water-percent" data-water-percent>0%</span></div>
+              <div class="water-actions"><button type="button" data-add-water="250">+ 250 ml</button><button type="button" data-add-water="500">+ 500 ml</button><button class="undo-water" type="button" data-undo-water aria-label="Undo last water entry">Undo</button></div>
+            </article>
+
+            <article class="dashboard-card recommendation-card" data-recommendation-card>
+              <div class="card-heading"><div><span class="card-kicker"><span class="coach-spark">✦</span> Best next choice</span><h2 data-recommendation-title>Build your first recommendation</h2></div></div>
+              <p data-recommendation-reason>Log a meal and Nourish will identify the most useful next step.</p>
+              <div class="recommendation-meta" data-recommendation-meta></div>
+              <div class="card-actions"><button class="button button-dark button-compact" type="button" data-log-recommendation>View food</button><a class="text-link" href="#coach">Ask Coach <span aria-hidden="true">→</span></a></div>
+            </article>
+
+            <article class="dashboard-card meals-card">
+              <div class="card-heading"><div><span class="card-kicker">Today</span><h2>Your meals</h2></div><a class="text-link" href="#log">Add food</a></div>
+              <div class="meal-summary-list" data-today-meals></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="app-view" data-view="log" aria-labelledby="log-title" hidden>
+          <header class="view-heading">
+            <div><p class="date-label">QUICK &amp; FLEXIBLE</p><h1 id="log-title">Log what you eat.</h1><p>Choose a food, set the portion, and keep moving.</p></div>
+          </header>
+          <div class="log-layout">
+            <div class="log-main">
+              <div class="search-wrap"><span aria-hidden="true"></span><label class="sr-only" for="food-search">Search foods</label><input id="food-search" type="search" placeholder="Search foods, meals or ingredients" autocomplete="off" data-food-search></div>
+              <div class="filter-row" aria-label="Food filters" data-food-filters>
+                <button class="filter-chip is-active" type="button" data-filter="all">All</button>
+                <button class="filter-chip" type="button" data-filter="recent">Recent</button>
+                <button class="filter-chip" type="button" data-filter="high-protein">High protein</button>
+                <button class="filter-chip" type="button" data-filter="high-fibre">High fibre</button>
+                <button class="filter-chip" type="button" data-filter="custom">My foods</button>
+              </div>
+              <div class="food-results-heading"><h2 data-food-results-title>Suggested foods</h2><span data-food-count></span></div>
+              <div class="food-grid" data-food-grid></div>
+            </div>
+            <aside class="log-aside">
+              <article class="quick-water-card">
+                <span class="water-drop" aria-hidden="true"></span>
+                <div><small>Quick add</small><h2>Water</h2><p data-log-water-summary>0 ml today</p></div>
+                <button type="button" data-add-water="250" aria-label="Add 250 millilitres of water">+</button>
+              </article>
+              <article class="custom-food-card">
+                <span class="custom-plus" aria-hidden="true">+</span>
+                <h2>Your food, your numbers.</h2>
+                <p>Add a personal recipe or packaged food once, then reuse it anytime.</p>
+                <button class="button button-ghost button-compact" type="button" data-create-food>Create custom food</button>
+              </article>
+              <article class="today-log-card"><div class="card-heading"><h2>Today’s log</h2><strong data-log-calories>0 kcal</strong></div><div data-log-list></div></article>
+            </aside>
+          </div>
+        </section>
+
+        <section class="app-view coach-view" data-view="coach" aria-labelledby="coach-title" hidden>
+          <header class="view-heading coach-view-heading">
+            <div><p class="date-label"><span class="coach-spark">✦</span> PERSONAL GUIDANCE</p><h1 id="coach-title">Nourish Coach</h1><p>Ask about your next meal, today’s gaps, or a better food choice.</p></div>
+            <span class="coach-mode" data-coach-mode><span></span> Smart guidance</span>
+          </header>
+          <div class="coach-app-layout">
+            <div class="coach-chat-card">
+              <div class="coach-messages" data-coach-messages role="log" aria-live="polite" aria-label="Conversation with Nourish Coach"></div>
+              <div class="coach-prompts" data-coach-prompts>
+                <button type="button">What should I eat next?</button>
+                <button type="button">Help me reach my protein goal</button>
+                <button type="button">How is my hydration?</button>
+              </div>
+              <form class="coach-form" data-coach-form>
+                <label class="sr-only" for="coach-input">Message Nourish Coach</label>
+                <textarea id="coach-input" rows="1" maxlength="1200" placeholder="Ask Nourish Coach…" data-coach-input required></textarea>
+                <button type="submit" aria-label="Send message" data-coach-send><span aria-hidden="true">↑</span></button>
+              </form>
+              <p class="coach-disclaimer">General wellness guidance only—not medical advice.</p>
+            </div>
+            <aside class="coach-context-card">
+              <span class="card-kicker">Today’s context</span><h2>What Coach sees</h2><p>Only the summary needed to personalize this conversation.</p>
+              <div class="coach-context-list" data-coach-context></div>
+              <a href="privacy.html#coach-data" class="text-link">How your data is used <span aria-hidden="true">→</span></a>
+            </aside>
+          </div>
+        </section>
+
+        <section class="app-view" data-view="insights" aria-labelledby="insights-title" hidden>
+          <header class="view-heading">
+            <div><p class="date-label">YOUR PATTERNS</p><h1 id="insights-title">Progress, without pressure.</h1><p>Look for rhythms you can repeat—not perfect days.</p></div>
+          </header>
+          <div class="insights-grid">
+            <article class="dashboard-card insight-hero-card"><div><span class="card-kicker">Consistency score</span><h2 data-consistency-score>0%</h2><p data-consistency-copy>Log your first meal to begin your weekly picture.</p></div><div class="consistency-ring" data-consistency-ring role="progressbar" aria-label="Seven-day consistency score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-consistency-ring-text>0</span></div></article>
+            <article class="dashboard-card week-chart-card"><div class="card-heading"><div><span class="card-kicker">Past 7 days</span><h2>Energy rhythm</h2></div><span class="legend"><i></i> Daily target</span></div><div class="week-chart" data-week-chart></div></article>
+            <article class="dashboard-card insight-stat"><span class="stat-symbol protein-symbol" aria-hidden="true"></span><small>Average protein</small><strong data-average-protein>0g</strong><p data-protein-insight>No logged days yet.</p></article>
+            <article class="dashboard-card insight-stat"><span class="stat-symbol water-symbol" aria-hidden="true"></span><small>Average hydration</small><strong data-average-water>0L</strong><p data-water-insight>No logged days yet.</p></article>
+            <article class="dashboard-card nutrient-trends"><div class="card-heading"><div><span class="card-kicker">Target completion</span><h2>This week’s balance</h2></div></div><div data-nutrient-trends></div></article>
+          </div>
+        </section>
+
+        <section class="app-view" data-view="profile" aria-labelledby="profile-title" hidden>
+          <header class="view-heading">
+            <div><p class="date-label">PERSONAL SETTINGS</p><h1 id="profile-title">Make Nourish yours.</h1><p>Adjust your goals, preferences, appearance and data.</p></div>
+          </header>
+          <div class="profile-layout">
+            <form class="profile-card" data-profile-form>
+              <div class="profile-card-head"><span class="large-avatar" data-profile-avatar>N</span><div><h2 data-profile-name-heading>Your profile</h2><p>Personal details and food preferences</p></div><button class="button button-dark button-compact" type="submit">Save changes</button></div>
+              <div class="form-section"><h3>About you</h3><div class="form-grid two-col"><label><span>Name</span><input class="text-input" name="name" maxlength="40" required></label><label><span>Age</span><input class="text-input" name="age" type="number" min="16" max="100" required></label><label><span>Height (cm)</span><input class="text-input" name="height" type="number" min="120" max="230" required></label><label><span>Weight (kg)</span><input class="text-input" name="weight" type="number" min="35" max="250" step="0.1" required></label></div></div>
+              <div class="form-section"><h3>Preferences</h3><div class="form-grid two-col"><label><span>Goal</span><select class="select-input" name="goal"><option value="lose">Lose steadily</option><option value="maintain">Maintain</option><option value="gain">Build &amp; gain</option></select></label><label><span>Eating style</span><select class="select-input" name="diet"><option value="omnivore">Everything</option><option value="vegetarian">Vegetarian</option><option value="vegan">Vegan</option></select></label><label class="span-two"><span>Allergens to avoid</span><input class="text-input" name="allergies" type="text" placeholder="e.g. peanuts, milk"></label></div></div>
+              <div class="form-section"><h3>Daily targets</h3><div class="form-grid target-fields"><label><span>Calories</span><input class="text-input" name="calories" type="number" min="1000" max="6000" required></label><label><span>Protein (g)</span><input class="text-input" name="protein" type="number" min="20" max="350" required></label><label><span>Fibre (g)</span><input class="text-input" name="fiber" type="number" min="10" max="100" required></label><label><span>Water (ml)</span><input class="text-input" name="water" type="number" min="1000" max="6000" step="50" required></label></div></div>
+            </form>
+            <aside class="settings-column">
+              <article class="settings-card"><span class="card-kicker">Appearance</span><h2>Make it comfortable</h2><label class="setting-row"><span><strong>Dark appearance</strong><small>Reduce glare in low light</small></span><input class="toggle-input" type="checkbox" data-theme-checkbox><i aria-hidden="true"></i></label><label class="setting-row"><span><strong>Reduced motion</strong><small>Limit interface animations</small></span><input class="toggle-input" type="checkbox" data-motion-checkbox><i aria-hidden="true"></i></label><button class="button button-ghost button-full" type="button" data-install-button>Install Nourish</button></article>
+              <article class="settings-card"><span class="card-kicker">Your data</span><h2>Backup &amp; control</h2><p>Keep a private copy or move Nourish to another phone.</p><div class="settings-actions"><button type="button" data-export>Export backup <span>↓</span></button><label class="import-label">Import backup <span>↑</span><input type="file" accept="application/json" data-import></label></div><button class="danger-link" type="button" data-reset>Erase all Nourish data</button></article>
+              <article class="settings-card source-card"><span class="card-kicker">Nutrition data</span><h2>Useful estimates</h2><p>Starter food values are approximate and informed by USDA FoodData Central. Check packaging or trusted databases when precision matters.</p><a class="text-link" href="https://fdc.nal.usda.gov/" target="_blank" rel="noopener">Visit FoodData Central <span aria-hidden="true">↗</span></a></article>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Nourish navigation" data-app-nav>
+      <a href="#today" data-route="today"><span class="nav-icon icon-today" aria-hidden="true"></span><span>Today</span></a>
+      <a href="#log" data-route="log"><span class="nav-icon icon-log" aria-hidden="true"></span><span>Log</span></a>
+      <a class="coach-nav-item" href="#coach" data-route="coach"><span class="nav-icon icon-coach" aria-hidden="true"></span><span>Coach</span></a>
+      <a href="#insights" data-route="insights"><span class="nav-icon icon-insights" aria-hidden="true"></span><span>Insights</span></a>
+      <a href="#profile" data-route="profile"><span class="nav-icon icon-profile" aria-hidden="true"></span><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <dialog class="food-dialog" data-food-dialog>
+    <form method="dialog"><button class="dialog-close" value="cancel" aria-label="Close food details">×</button></form>
+    <div data-food-dialog-content></div>
+  </dialog>
+
+  <dialog class="custom-food-dialog" data-custom-food-dialog>
+    <form class="custom-food-form" data-custom-food-form>
+      <div class="dialog-heading"><div><span class="card-kicker">Your food</span><h2>Create custom food</h2></div><button class="dialog-close" type="button" data-close-custom aria-label="Close custom food form">×</button></div>
+      <div class="form-grid two-col">
+        <label class="span-two"><span>Food name</span><input class="text-input" name="name" maxlength="60" required placeholder="e.g. Homemade power bowl"></label>
+        <label><span>Serving label</span><input class="text-input" name="servingLabel" maxlength="40" required placeholder="1 bowl"></label>
+        <label><span>Calories</span><input class="text-input" name="calories" type="number" min="0" max="5000" required></label>
+        <label><span>Protein (g)</span><input class="text-input" name="protein" type="number" min="0" max="500" step="0.1" required></label>
+        <label><span>Carbohydrates (g)</span><input class="text-input" name="carbs" type="number" min="0" max="500" step="0.1" required></label>
+        <label><span>Fat (g)</span><input class="text-input" name="fat" type="number" min="0" max="500" step="0.1" required></label>
+        <label><span>Fibre (g)</span><input class="text-input" name="fiber" type="number" min="0" max="100" step="0.1" required></label>
+      </div>
+      <button class="button button-primary button-full" type="submit">Save custom food</button>
+    </form>
+  </dialog>
+
+  <div class="toast" role="status" aria-live="polite" data-toast></div>
+</body>
+</html>
