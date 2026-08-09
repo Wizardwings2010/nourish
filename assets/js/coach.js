@@ -20,7 +20,7 @@
   function initialMessage() {
     const state = window.Nourish.storage.getState();
     const firstName = state.profile && state.profile.name ? state.profile.name.split(" ")[0] : "there";
-    return `Hi ${firstName}. I can use today’s nutrition summary to help you choose what to eat, close a nutrient gap, or plan around your routine. What would be useful right now?`;
+    return `Hey ${firstName}! I am your private on-device Nourish Coach. We can figure out your next meal, talk through cravings, check your protein or hydration, or build an Indian meal around today's goals. What is on your mind?`;
   }
 
   function messageMarkup(message) {
@@ -58,11 +58,41 @@
 
   function offlineResponse(question) {
     const text = question.toLowerCase();
+    const state = window.Nourish.storage.getState();
+    const firstName = state.profile && state.profile.name ? state.profile.name.split(" ")[0] : "there";
     const summary = window.Nourish.nutrition.daySummary();
     const remaining = summary.remaining;
     const suggestions = summary.topSuggestions;
     const first = suggestions[0];
     const second = suggestions[1];
+    const recent = state.coachMessages || [];
+    const previousAssistant = [...recent].reverse().find((item) => item.role === "assistant");
+    const foods = window.Nourish.nutrition.getFoods();
+    const aliases = {
+      biryani: "chicken-biryani", roti: "roti", chapati: "roti", dosa: "dosa", poha: "poha", upma: "upma",
+      rajma: "rajma-rice", chole: "chole", khichdi: "khichdi", paratha: "aloo-paratha", paneer: "paneer",
+      samosa: "samosa", dhokla: "dhokla", dal: "dal", idli: "idli", banana: "banana", apple: "apple",
+      chicken: "chicken", salmon: "salmon", oats: "oats", yoghurt: "greek-yogurt", yogurt: "greek-yogurt"
+    };
+    const mentionedAlias = Object.keys(aliases).sort((a, b) => b.length - a.length).find((name) => text.includes(name));
+    let mentionedFood = mentionedAlias ? window.Nourish.nutrition.getFood(aliases[mentionedAlias]) : null;
+    if (mentionedAlias === "biryani" && /veg|vegetable/.test(text)) mentionedFood = window.Nourish.nutrition.getFood("veg-biryani");
+
+    function describeFood(food) {
+      const calorieFit = remaining.calories <= 0
+        ? "You are already around today's calorie estimate, so let hunger and portion size guide you."
+        : food.calories <= remaining.calories
+          ? `It fits inside the roughly ${Math.round(remaining.calories)} kcal remaining.`
+          : `It is above the roughly ${Math.round(remaining.calories)} kcal remaining, but that number is a guide rather than a strict limit.`;
+      return `${food.name} is about ${Math.round(food.calories)} kcal with ${Math.round(food.protein)}g protein, ${Math.round(food.carbs)}g carbs, ${Math.round(food.fat)}g fat, and ${Math.round(food.fiber)}g fibre per ${food.servingLabel}. ${calorieFit} Preparation and serving size can change those numbers.`;
+    }
+
+    function indianSuggestion() {
+      const profile = state.profile || {};
+      const choices = foods.filter((food) => (food.tags || []).includes("indian") && window.Nourish.nutrition.compatibleWithProfile(food, profile));
+      const score = (food) => (Math.min(food.protein, remaining.protein || 20) * 2) + (Math.min(food.fiber, remaining.fiber || 8) * 3) - Math.abs(Math.min(remaining.calories || 450, 650) - food.calories) / 40;
+      return choices.sort((a, b) => score(b) - score(a));
+    }
 
     if (/emergency|faint|chest pain|can.t breathe|severe reaction|anaphyl/.test(text)) {
       return "This could need urgent medical help. Contact your local emergency service now. Nourish cannot assess emergencies.";
@@ -72,6 +102,40 @@
     }
     if (/allerg|medical|diabet|pregnan|kidney|medication|disease/.test(text)) {
       return "For allergies, pregnancy, medication, or a medical condition, a clinician or registered dietitian should guide specific food choices. I can still help explain your general tracking summary, but I won’t override medical advice.";
+    }
+    if (/thank|thanks|thx|appreciate/.test(text)) {
+      return `Anytime, ${firstName}. You are doing the useful part: paying attention without demanding perfection. Want to plan your next meal or check where today's nutrition stands?`;
+    }
+    if (/how are you|who are you|what can you do/.test(text)) {
+      return `I am doing well and ready to help, ${firstName}. I am the private offline version of Nourish Coach, so I use your logs on this phone instead of sending them to an online AI. I can discuss meals, hunger, protein, fibre, hydration, calories, and Indian food choices.`;
+    }
+    if (/what (did|have) i (eat|log)|show.*log|today.s food/.test(text)) {
+      const today = window.Nourish.storage.getDayKey();
+      const names = state.logs.filter((entry) => entry.date === today).map((entry) => window.Nourish.nutrition.getFood(entry.foodId)).filter(Boolean).map((food) => food.name);
+      return names.length
+        ? `You have logged ${names.join(", ")} today. Together they bring you to about ${Math.round(summary.totals.calories)} kcal and ${Math.round(summary.totals.protein)}g protein. Want me to suggest what would balance that next?`
+        : "You have not logged any food yet today. You can snap a meal in Log or choose one from the library, then I can respond to your actual totals.";
+    }
+    if (mentionedFood && /good|healthy|calor|protein|fibre|fiber|macro|what about|should i|can i|how much|nutri/.test(text)) {
+      return describeFood(mentionedFood);
+    }
+    if (/another|something else|other option|don.t want|dont want/.test(text)) {
+      if (second) return `Sure — try ${second.name} instead. ${second.reason} It gives you a different route without losing sight of today's protein, fibre, and energy needs.`;
+      const indianAlternative = indianSuggestion()[1];
+      return indianAlternative
+        ? `Absolutely. ${indianAlternative.name} is another practical option: about ${Math.round(indianAlternative.calories)} kcal and ${Math.round(indianAlternative.protein)}g protein per ${indianAlternative.servingLabel}.`
+        : "Absolutely. Tell me whether you want something light, filling, sweet, savoury, vegetarian, or high-protein and I will narrow it down.";
+    }
+    if (/^\s*(why|how so|really|are you sure)/.test(text) && previousAssistant) {
+      return `Fair question. I am comparing your logged totals with what remains today: roughly ${Math.round(remaining.calories)} kcal, ${Math.round(remaining.protein)}g protein, and ${Math.round(remaining.fiber)}g fibre. My suggestion prioritizes the largest gap while still considering overall energy. It is an estimate, so your hunger and actual portion still matter.`;
+    }
+    if (/indian|desi|biryani|curry|sabzi|roti|chapati/.test(text) && /idea|meal|eat|suggest|recommend|dinner|lunch|breakfast/.test(text)) {
+      const indian = indianSuggestion();
+      if (indian.length) return `For an Indian option, I would start with ${indian[0].name} (${indian[0].servingLabel}). It is roughly ${Math.round(indian[0].calories)} kcal with ${Math.round(indian[0].protein)}g protein and ${Math.round(indian[0].fiber)}g fibre.${indian[1] ? ` If that does not sound good, ${indian[1].name} is another solid choice.` : ""} What kind of meal are you in the mood for?`;
+    }
+    if (/hungry|craving|starving|need food/.test(text)) {
+      if (first) return `I hear you. If you are genuinely hungry, let us choose something satisfying rather than trying to out-discipline it. ${first.name} is a useful starting point; use a comfortable portion and add vegetables or fruit if that fits. Are you craving something savoury, sweet, light, or filling?`;
+      return "If you are hungry, eat. A simple balanced choice has protein, a fibre-rich carbohydrate, and something colourful. Tell me what food you have available and I will help you assemble it.";
     }
     if (/water|hydrat|drink/.test(text)) {
       if (remaining.water <= 0) return "You’ve reached today’s hydration target. Continue drinking to thirst and adjust for heat or activity without forcing excessive water.";
@@ -92,18 +156,23 @@
       return `You have about ${Math.round(remaining.calories)} kcal remaining. Treat that as a planning estimate, not a hard limit. ${first ? `${first.name} is currently a strong fit because it adds useful nutrients within that space.` : "Choose something satisfying with protein and fibre."}`;
     }
     if (/breakfast/.test(text)) {
-      return "For a focused breakfast, combine protein, fibre, and an easy energy source—for example Greek yoghurt with oats and berries, or idli with sambar. Adjust the choice to your dietary preference and appetite.";
+      return "For a focused breakfast, combine protein, fibre, and an easy energy source. Idli with sambar, vegetable poha with curd, dosa with extra sambar, or Greek yoghurt with oats can all work. Which of those sounds realistic today?";
     }
     if (/dinner|lunch|meal|eat next|what should|suggest|recommend/.test(text)) {
       if (!first) return "A balanced next meal usually combines a protein source, vegetables, a fibre-rich carbohydrate, and enough energy to satisfy you. Add a few logs first and I can make the suggestion more specific.";
       return `${first.name} is your strongest next fit. ${first.reason}${second ? ` Another good option is ${second.name}.` : ""} You have roughly ${Math.round(remaining.calories)} kcal, ${Math.round(remaining.protein)}g protein, and ${Math.round(remaining.fiber)}g fibre remaining.`;
     }
     if (/hello|hi|hey|help/.test(text)) {
-      return "I can help choose your next food, review protein or fibre, check hydration, or shape a meal around what remains today. Try asking, “What should I eat next?”";
+      return `Hey ${firstName}! Tell me what is happening — are you planning a meal, feeling hungry, checking a nutrient, or deciding between two foods?`;
+    }
+    if (/^(yes|yeah|yep|okay|ok|sure)[.! ]*$/.test(text)) {
+      return first
+        ? `Great. Start with ${first.name}, use the portion that matches your hunger, and log it afterward. If you tell me what ingredients you actually have, I can help make the choice more practical.`
+        : "Great. Tell me what food you have available or what kind of meal you want, and we will make a simple plan.";
     }
     return first
-      ? `Based on today’s summary, ${first.name} is a useful next option. ${first.reason} You can also ask me specifically about protein, fibre, hydration, calories, or a meal.`
-      : "I can help once you log a little context. Ask about protein, fibre, hydration, calories, or how to build a balanced meal.";
+      ? `Let me connect that to your day: ${first.name} is currently a useful option because ${first.reason.charAt(0).toLowerCase()}${first.reason.slice(1)} If that is not what you meant, give me one more detail and I will adjust.`
+      : "I want to give you a useful answer, but I need one more detail. Are you asking about a particular food, your next meal, protein, fibre, hydration, or calories?";
   }
 
   function typingMarkup() {
@@ -145,12 +214,13 @@
     let source = "live";
     try {
       if (!navigator.onLine) throw new Error("offline");
+      if (window.location.hostname.endsWith("github.io")) throw new Error("static-host");
       reply = await requestLiveReply(clean);
       if (elements.mode) elements.mode.innerHTML = "<span></span> Live AI guidance";
     } catch (error) {
       reply = offlineResponse(clean);
       source = "offline";
-      if (elements.mode) elements.mode.innerHTML = "<span></span> Smart offline guidance";
+      if (elements.mode) elements.mode.innerHTML = "<span></span> Private on-device coach";
     }
 
     const typing = elements.messages.querySelector("[data-typing]");

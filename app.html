@@ -10,12 +10,13 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="assets/css/styles.css?v=1.0.1">
-  <script src="assets/js/data.js?v=1.0.1" defer></script>
-  <script src="assets/js/storage.js?v=1.0.1" defer></script>
-  <script src="assets/js/nutrition.js?v=1.0.1" defer></script>
-  <script src="assets/js/coach.js?v=1.0.1" defer></script>
-  <script src="assets/js/app.js?v=1.0.1" defer></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=1.2.0">
+  <script src="assets/js/data.js?v=1.2.0" defer></script>
+  <script src="assets/js/storage.js?v=1.2.0" defer></script>
+  <script src="assets/js/nutrition.js?v=1.2.0" defer></script>
+  <script src="assets/js/coach.js?v=1.2.0" defer></script>
+  <script src="assets/js/camera.js?v=1.2.0" defer></script>
+  <script src="assets/js/app.js?v=1.2.0" defer></script>
 </head>
 <body class="app-page">
   <a class="skip-link" href="#app-main">Skip to content</a>
@@ -154,10 +155,28 @@
           </header>
           <div class="log-layout">
             <div class="log-main">
+              <section class="camera-log-card" aria-labelledby="camera-log-title">
+                <div class="camera-log-copy">
+                  <span class="camera-icon" aria-hidden="true"></span>
+                  <div><span class="card-kicker">FREE ON-DEVICE SCAN</span><h2 id="camera-log-title">Snap your meal</h2><p>Take a clear photo. Nourish will suggest likely matches, then you confirm the food and portion.</p></div>
+                </div>
+                <label class="button button-dark camera-button">Open camera<input type="file" accept="image/*" capture="environment" data-meal-camera></label>
+                <div class="camera-analysis" data-camera-analysis hidden>
+                  <div class="camera-preview"><img alt="Meal ready for on-device analysis" data-camera-preview><button type="button" data-camera-reset>Retake</button></div>
+                  <div class="camera-result">
+                    <div class="camera-status" data-camera-status role="status" aria-live="polite"><span class="camera-spinner" aria-hidden="true"></span><div><strong>Preparing your private scan...</strong><small>The first scan may download the free recognition model.</small></div></div>
+                    <div class="camera-suggestions" data-camera-suggestions></div>
+                  </div>
+                </div>
+                <p class="camera-privacy"><span aria-hidden="true">✓</span> Your photo is analyzed on this device and is not uploaded. Estimates must be confirmed.</p>
+              </section>
               <div class="search-wrap"><span aria-hidden="true"></span><label class="sr-only" for="food-search">Search foods</label><input id="food-search" type="search" placeholder="Search foods, meals or ingredients" autocomplete="off" data-food-search></div>
               <div class="filter-row" aria-label="Food filters" data-food-filters>
                 <button class="filter-chip is-active" type="button" data-filter="all">All</button>
                 <button class="filter-chip" type="button" data-filter="recent">Recent</button>
+                <button class="filter-chip" type="button" data-filter="indian">Indian</button>
+                <button class="filter-chip" type="button" data-filter="produce">Fruit &amp; veg</button>
+                <button class="filter-chip" type="button" data-filter="treats">Snacks &amp; treats</button>
                 <button class="filter-chip" type="button" data-filter="high-protein">High protein</button>
                 <button class="filter-chip" type="button" data-filter="high-fibre">High fibre</button>
                 <button class="filter-chip" type="button" data-filter="custom">My foods</button>
@@ -194,6 +213,7 @@
                 <button type="button">What should I eat next?</button>
                 <button type="button">Help me reach my protein goal</button>
                 <button type="button">How is my hydration?</button>
+                <button type="button">Give me an Indian meal idea</button>
               </div>
               <form class="coach-form" data-coach-form>
                 <label class="sr-only" for="coach-input">Message Nourish Coach</label>

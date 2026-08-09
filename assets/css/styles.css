@@ -391,6 +391,47 @@ em { color: var(--green-deep); font-style: normal; }
 
 /* Log */
 .log-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+.camera-log-card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; margin-bottom: 16px; padding: 20px; border: 1px solid color-mix(in srgb, var(--green-deep) 28%, var(--line)); border-radius: 22px; background: linear-gradient(135deg, var(--surface), color-mix(in srgb, var(--green-soft) 42%, var(--surface))); overflow: hidden; }
+.camera-log-card::after { content: ""; position: absolute; right: -55px; top: -75px; width: 180px; height: 180px; border-radius: 50%; background: color-mix(in srgb, var(--green) 15%, transparent); pointer-events: none; }
+.camera-log-copy { position: relative; z-index: 1; display: flex; align-items: center; gap: 15px; }
+.camera-icon { flex: 0 0 auto; position: relative; width: 48px; height: 40px; border: 2px solid var(--ink); border-radius: 12px; }
+.camera-icon::before { content: ""; position: absolute; inset: 9px auto auto 14px; width: 14px; height: 14px; border: 2px solid var(--ink); border-radius: 50%; }
+.camera-icon::after { content: ""; position: absolute; left: 9px; top: -7px; width: 18px; height: 8px; border-radius: 5px 5px 0 0; background: var(--ink); }
+.camera-log-copy h2 { margin: 3px 0 5px; font-size: 22px; letter-spacing: -0.04em; }
+.camera-log-copy p { max-width: 570px; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+.camera-button { position: relative; z-index: 1; min-height: 44px; cursor: pointer; white-space: nowrap; }
+.camera-button input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.camera-analysis { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(180px, 0.72fr) minmax(0, 1.28fr); gap: 17px; padding-top: 18px; border-top: 1px solid var(--line); }
+.camera-analysis[hidden] { display: none; }
+.camera-preview { position: relative; min-height: 240px; border-radius: 18px; background: var(--ink); overflow: hidden; }
+.camera-preview img { width: 100%; height: 100%; min-height: 240px; max-height: 390px; object-fit: cover; }
+.camera-preview button { position: absolute; right: 10px; top: 10px; padding: 8px 11px; border: 0; border-radius: 99px; background: rgba(15, 21, 17, 0.78); color: white; cursor: pointer; font-size: 9px; font-weight: 800; backdrop-filter: blur(8px); }
+.camera-result { min-width: 0; }
+.camera-status { display: flex; align-items: center; gap: 12px; min-height: 56px; margin-bottom: 12px; padding: 12px; border-radius: 15px; background: var(--surface-soft); }
+.camera-status.success { background: var(--green-soft); }
+.camera-status.error { background: color-mix(in srgb, var(--coral) 11%, var(--surface)); }
+.camera-status strong, .camera-status small { display: block; }
+.camera-status strong { margin-bottom: 3px; font-size: 11px; }
+.camera-status small { color: var(--muted); font-size: 9px; line-height: 1.45; }
+.camera-spinner { flex: 0 0 auto; width: 22px; height: 22px; border: 3px solid color-mix(in srgb, var(--green-deep) 22%, transparent); border-top-color: var(--green-deep); border-radius: 50%; animation: camera-spin 850ms linear infinite; }
+@keyframes camera-spin { to { transform: rotate(360deg); } }
+.camera-status-icon { display: grid; flex: 0 0 auto; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--green-deep); color: white; font-size: 12px; font-weight: 900; }
+.camera-status.error .camera-status-icon { background: var(--coral); }
+.camera-suggestion-heading { display: flex; justify-content: space-between; align-items: baseline; margin: 4px 1px 8px; }
+.camera-suggestion-heading strong { font-size: 11px; }
+.camera-suggestion-heading span { color: var(--muted); font-size: 8px; }
+.camera-food-match { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 11px; width: 100%; margin-top: 7px; padding: 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); text-align: left; cursor: pointer; }
+.camera-food-match:hover { border-color: var(--green-deep); }
+.camera-food-match .food-emoji { width: 40px; height: 40px; border-radius: 12px; font-size: 20px; }
+.camera-food-match span:nth-child(2) { min-width: 0; }
+.camera-food-match small, .camera-food-match strong, .camera-food-match em { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.camera-food-match small { color: var(--green-deep); font-size: 7px; font-weight: 800; text-transform: uppercase; }
+.camera-food-match strong { margin: 2px 0; font-size: 11px; }
+.camera-food-match em { color: var(--muted); font-size: 8px; font-style: normal; }
+.camera-food-match > i { color: var(--muted); font-size: 22px; font-style: normal; }
+.camera-search-manually { width: 100%; margin-top: 9px; padding: 10px; border: 1px dashed var(--line); border-radius: 12px; background: transparent; color: var(--muted); cursor: pointer; font-size: 9px; font-weight: 750; }
+.camera-privacy { grid-column: 1 / -1; position: relative; z-index: 1; margin: -6px 0 0; color: var(--muted); font-size: 8px; }
+.camera-privacy span { color: var(--green-deep); font-weight: 900; }
 .search-wrap { position: relative; }
 .search-wrap > span { position: absolute; top: 50%; left: 19px; width: 15px; height: 15px; border: 2px solid var(--muted); border-radius: 50%; transform: translateY(-55%); }
 .search-wrap > span::after { content: ""; position: absolute; right: -5px; bottom: -3px; width: 6px; height: 2px; background: var(--muted); transform: rotate(45deg); }
@@ -690,6 +731,10 @@ dialog { color: var(--ink); }
   .calorie-ring { width: 165px; height: 165px; }
   .calorie-numbers { width: 100%; text-align: center; }
   .food-grid { grid-template-columns: 1fr; }
+  .camera-log-card { grid-template-columns: 1fr; padding: 17px; }
+  .camera-button { width: 100%; justify-content: center; }
+  .camera-analysis { grid-template-columns: 1fr; }
+  .camera-preview, .camera-preview img { min-height: 210px; max-height: 310px; }
   .log-aside { grid-template-columns: 1fr; }.today-log-card { grid-column: auto; }
   .coach-view-heading { align-items: flex-start; }.coach-view-heading .coach-mode { display: none; }
   .coach-context-card { padding: 16px; }.coach-context-card h2, .coach-context-card > .card-kicker { display: none; }.coach-context-list { margin: 0; }

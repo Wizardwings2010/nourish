@@ -251,6 +251,9 @@
       const ids = [...state.logs].reverse().map((entry) => entry.foodId);
       foods = foods.filter((food) => ids.includes(food.id)).sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
     }
+    if (activeFoodFilter === "indian") foods = foods.filter((food) => (food.tags || []).includes("indian"));
+    if (activeFoodFilter === "produce") foods = foods.filter((food) => food.category === "fruit" || String(food.category).includes("vegetable"));
+    if (activeFoodFilter === "treats") foods = foods.filter((food) => /snack|sweet|dessert|fast food|branded/.test(food.category) || (food.tags || []).includes("treat"));
     if (activeFoodFilter === "high-protein") foods = foods.filter((food) => food.protein >= 10).sort((a, b) => b.protein - a.protein);
     if (activeFoodFilter === "high-fibre") foods = foods.filter((food) => food.fiber >= 4).sort((a, b) => b.fiber - a.fiber);
     if (activeFoodFilter === "custom") foods = foods.filter((food) => food.custom);
@@ -551,6 +554,7 @@
     applySettings();
     setupOnboarding();
     bindEvents();
+    if (N.camera) N.camera.init();
     updateNetworkStatus();
     if (N.storage.getState().profile) {
       renderAll();
@@ -559,6 +563,14 @@
     } else if (N.coach) {
       N.coach.init();
     }
-    if ("serviceWorker" in navigator && window.location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});
+    if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+      navigator.serviceWorker.register("sw.js").then((registration) => registration.update()).catch(() => {});
+    }
   });
 }());

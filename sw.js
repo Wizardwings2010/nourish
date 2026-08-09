@@ -1,19 +1,20 @@
 "use strict";
 
-const CACHE_NAME = "nourish-shell-v1.0.1";
+const CACHE_NAME = "nourish-shell-v1.2.0";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./app.html",
   "./privacy.html",
   "./manifest.webmanifest",
-  "./assets/css/styles.css?v=1.0.1",
+  "./assets/css/styles.css?v=1.2.0",
   "./assets/js/landing.js?v=1.0.1",
-  "./assets/js/data.js?v=1.0.1",
-  "./assets/js/storage.js?v=1.0.1",
-  "./assets/js/nutrition.js?v=1.0.1",
-  "./assets/js/coach.js?v=1.0.1",
-  "./assets/js/app.js?v=1.0.1",
+  "./assets/js/data.js?v=1.2.0",
+  "./assets/js/storage.js?v=1.2.0",
+  "./assets/js/nutrition.js?v=1.2.0",
+  "./assets/js/coach.js?v=1.2.0",
+  "./assets/js/camera.js?v=1.2.0",
+  "./assets/js/app.js?v=1.2.0",
   "./assets/icons/favicon-32.png",
   "./assets/icons/apple-touch-icon.png",
   "./assets/icons/icon-192.png",

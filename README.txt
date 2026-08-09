@@ -6,7 +6,10 @@ WHAT IS INCLUDED
 Nourish is a mobile-first Progressive Web App. It includes a public introduction,
 private nutrition dashboard, first-time setup, meal and water logging, a starter
 food library, custom foods, contextual recommendations, weekly insights, local
-backup and restore, dark mode, offline support, and Nourish Coach.
+backup and restore, dark mode, offline support, and Nourish Coach. The Log screen
+also includes private camera capture and free on-device image classification. Its
+115-item library covers staple foods, Indian meals, treats, packaged brands,
+fruits, and vegetables.
 
 No Node.js, npm, framework, build step, or package installation is required.
 
@@ -54,6 +57,12 @@ Core profile, meal, water, custom food, settings and recent Coach history are
 stored on the device in browser storage. Use Profile > Export backup regularly.
 Clearing site data or uninstalling a browser may remove local information.
 
+Meal photos selected through the camera are processed in the browser and are not
+uploaded by Nourish. The first scan downloads TensorFlow.js and a small MobileNet
+classification model from public CDNs. Visual matches and portion estimates can
+be wrong, especially for mixed dishes, so the user always confirms a library item
+and serving before it is logged.
+
 Live Coach requests send only the current question, recent conversation, dietary
 preference, declared allergens, and a limited summary of daily totals and targets.
 They do not send a name or exact body measurements.
@@ -84,6 +93,7 @@ assets/js/data.js              Starter food library
 assets/js/storage.js           On-device data, backup and restore
 assets/js/nutrition.js         Targets, totals and recommendation engine
 assets/js/coach.js             Live AI connection and offline Coach
+assets/js/camera.js            Camera capture and on-device food suggestions
 assets/js/app.js               App screens and interactions
 assets/js/landing.js           Landing animations and installation flow
 assets/icons/                  App and home-screen icons
