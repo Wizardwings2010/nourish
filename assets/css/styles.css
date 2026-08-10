@@ -904,6 +904,99 @@ dialog { color: var(--ink); }
   .meal-summary-list { grid-template-columns: minmax(0, 1fr); }
   .macro-row { grid-template-columns: 68px minmax(0, 1fr) auto; gap: 8px; }
   .plan-row { grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 7px; }
+
+  .daily-plan-card,
+  .discipline-card,
+  .achievements-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 19px;
+    overflow: hidden;
+  }
+
+  .daily-plan-card .card-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .daily-plan-card .card-heading .button {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    white-space: normal;
+  }
+
+  .daily-plan-card > p,
+  .discipline-card > div,
+  .discipline-breakdown,
+  .achievements-card .card-heading,
+  .achievement-grid,
+  .achievement {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .discipline-card { grid-template-columns: minmax(0, 1fr); }
+  .discipline-breakdown > div { grid-template-columns: 58px minmax(0, 1fr) 34px; }
+  .achievement strong,
+  .achievement small,
+  .daily-plan-card p,
+  .discipline-card p {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  /* Universal guard for every app card, including generated content. */
+  .app-page .dashboard-card,
+  .app-page .workout-panel,
+  .app-page .settings-card,
+  .app-page .feature-dialog,
+  .app-page .food-card,
+  .app-page .profile-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .app-page .dashboard-card *,
+  .app-page .workout-panel *,
+  .app-page .settings-card *,
+  .app-page .feature-dialog *,
+  .app-page .food-card *,
+  .app-page .profile-card * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .app-page .dashboard-card h2,
+  .app-page .dashboard-card h3,
+  .app-page .dashboard-card p,
+  .app-page .dashboard-card strong,
+  .app-page .dashboard-card small,
+  .app-page .dashboard-card span,
+  .app-page .workout-panel h2,
+  .app-page .workout-panel h3,
+  .app-page .workout-panel p,
+  .app-page .settings-card p,
+  .app-page .food-card strong,
+  .app-page .food-card small {
+    overflow-wrap: anywhere;
+  }
+
+  .app-page .card-heading {
+    flex-wrap: wrap;
+  }
+
+  .app-page .card-heading > .button,
+  .app-page .card-heading > button,
+  .app-page .card-heading > .text-link {
+    flex: 0 1 auto;
+    white-space: normal;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
