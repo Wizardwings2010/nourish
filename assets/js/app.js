@@ -256,6 +256,8 @@
     if (activeFoodFilter === "favorites") foods = foods.filter((food) => state.favoriteFoodIds.includes(food.id));
     if (activeFoodFilter === "indian") foods = foods.filter((food) => (food.tags || []).includes("indian"));
     if (activeFoodFilter === "produce") foods = foods.filter((food) => food.category === "fruit" || String(food.category).includes("vegetable"));
+    if (activeFoodFilter === "drinks") foods = foods.filter((food) => /drink|juice|tea|coffee/.test(String(food.category).toLowerCase()) || (food.tags || []).some((tag) => /drink|juice/.test(tag)));
+    if (activeFoodFilter === "brands") foods = foods.filter((food) => String(food.category).toLowerCase().includes("branded") || (food.tags || []).includes("packaged"));
     if (activeFoodFilter === "treats") foods = foods.filter((food) => /snack|sweet|dessert|fast food|branded/.test(food.category) || (food.tags || []).includes("treat"));
     if (activeFoodFilter === "high-protein") foods = foods.filter((food) => food.protein >= 10).sort((a, b) => b.protein - a.protein);
     if (activeFoodFilter === "high-fibre") foods = foods.filter((food) => food.fiber >= 4).sort((a, b) => b.fiber - a.fiber);
