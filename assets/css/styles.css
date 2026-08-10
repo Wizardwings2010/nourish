@@ -858,6 +858,29 @@ dialog { color: var(--ink); }
   .reveal { opacity: 1; transform: none; }
 }
 
+/* Mobile viewport stability and readability */
+html, body { width: 100%; max-width: 100%; overflow-x: hidden; overscroll-behavior: none; }
+.app-page { position: relative; width: 100%; max-width: 100vw; overflow-x: clip; touch-action: pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+.app-shell, .app-content, .app-main, .app-view, .today-grid, .log-layout, .workout-layout, .insights-grid, .profile-layout { min-width: 0; max-width: 100%; }
+.app-page img, .app-page video, .app-page canvas, .app-page svg { max-width: 100%; }
+.app-page input, .app-page select, .app-page textarea { font-size: 16px; }
+.app-page .view-heading > div > p:last-child { font-size: 14px; line-height: 1.55; }
+.app-page .date-label, .app-page .card-kicker { font-size: 11px; }
+.app-page .dashboard-card p, .app-page .workout-panel p, .app-page .settings-card p, .app-page .feature-dialog p { font-size: 12px; line-height: 1.55; }
+.app-page .dashboard-card small, .app-page .workout-panel small, .app-page .settings-card small, .app-page .feature-dialog small { font-size: 10px; }
+.app-page button, .app-page .button { font-size: 12px; }
+.app-page .quick-action-rail button { font-size: 12px; }
+.app-page .food-card strong { font-size: 14px; }.app-page .food-card small { font-size: 11px; }.app-page .food-card > span:last-child { font-size: 12px; }
+.app-page .macro-row > span:first-child, .app-page .macro-row strong, .app-page .meal-summary strong, .app-page .meal-summary p { font-size: 12px; }
+.app-page .bottom-nav a { font-size: 10px; }
+.app-page .plan-row small { font-size: 9px; }.app-page .plan-row strong { font-size: 13px; }.app-page .plan-row em { font-size: 10px; }
+@media (max-width: 600px) {
+  .app-main { width: 100%; padding-inline: 16px; }
+  .app-view { width: 100%; }
+  .view-heading h1 { font-size: clamp(36px, 11vw, 48px); }
+  .dashboard-card, .workout-panel, .settings-card { max-width: 100%; }
+}
+
 @media (display-mode: standalone) {
   .landing-page .site-header { padding-top: max(18px, env(safe-area-inset-top)); }
   .app-topbar { padding-top: max(12px, env(safe-area-inset-top)); }
