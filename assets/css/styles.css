@@ -852,6 +852,60 @@ dialog { color: var(--ink); }
   .onboarding { align-items: start; padding-top: 110px; }.onboarding-brand { left: 18px; }.onboarding-progress { top: 75px; width: calc(100% - 36px); }.onboarding-step h1 { font-size: 46px; }.target-preview { grid-template-columns: repeat(2, 1fr); }.onboarding .form-grid.two-col { grid-template-columns: 1fr 1fr; }
 }
 
+/* Keep the Today dashboard fully inside narrow phone screens. */
+@media (max-width: 860px) {
+  .app-stage,
+  .app-main,
+  .app-view,
+  .today-grid {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .app-stage { margin-left: 0 !important; }
+  .today-grid { grid-template-columns: minmax(0, 1fr); }
+  .today-grid > * {
+    grid-column: 1 / -1 !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .card-heading,
+  .calorie-layout,
+  .calorie-numbers,
+  .macro-row,
+  .meal-summary-list,
+  .daily-plan-list,
+  .plan-row {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .quick-action-rail {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .quick-action-rail button {
+    min-width: 0;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .card-heading { gap: 10px; }
+  .card-heading > * { min-width: 0; }
+  .calorie-numbers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .meal-summary-list { grid-template-columns: minmax(0, 1fr); }
+  .macro-row { grid-template-columns: 68px minmax(0, 1fr) auto; gap: 8px; }
+  .plan-row { grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 7px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
