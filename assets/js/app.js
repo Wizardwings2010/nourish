@@ -21,13 +21,23 @@
     return new Intl.NumberFormat(undefined, { maximumFractionDigits: maximumFractionDigits == null ? 0 : maximumFractionDigits }).format(Number(value) || 0);
   }
 
-  function showToast(message) {
+  function showToast(message, options) {
     const toast = $("[data-toast]");
     if (!toast) return;
-    toast.textContent = message;
+    const settings = options || {};
+    const important = settings.undoable !== false && /add|log|remove|delete|save|update|change|complete|generate|repeat|mark|water|plan|restor|import/i.test(String(message));
+    toast.innerHTML = `<span>${escapeHtml(message)}</span>${important && N.storage.canUndo() ? '<button type="button" data-toast-undo aria-label="Undo last action"><i aria-hidden="true">↶</i> Undo</button>' : ""}`;
+    const undoButton = $("[data-toast-undo]", toast);
+    if (undoButton) undoButton.addEventListener("click", () => {
+      if (!N.storage.undoLast()) return;
+      renderAll();
+      if (N.workout) N.workout.render();
+      if (N.features) N.features.renderAll();
+      showToast("Last action undone.", { undoable: false });
+    });
     toast.classList.add("is-visible");
     window.clearTimeout(showToast.timer);
-    showToast.timer = window.setTimeout(() => toast.classList.remove("is-visible"), 3000);
+    showToast.timer = window.setTimeout(() => toast.classList.remove("is-visible"), important ? 5200 : 3000);
   }
 
   function applySettings() {

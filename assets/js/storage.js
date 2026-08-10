@@ -100,9 +100,13 @@
   }
 
   let state = load();
+  let undoSnapshot = null;
+  let restoringUndo = false;
 
   function save() {
     state.meta.lastOpenedAt = new Date().toISOString();
+    const previous = window.localStorage.getItem(STORAGE_KEY);
+    if (!restoringUndo && previous) undoSnapshot = previous;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     window.dispatchEvent(new CustomEvent("nourish:state", { detail: state }));
     return state;
@@ -271,6 +275,26 @@
     updateHydrationReminder(reminder) {
       state.settings.hydrationReminder = Object.assign({}, state.settings.hydrationReminder, reminder);
       return save();
+    },
+    canUndo() {
+      return Boolean(undoSnapshot);
+    },
+    undoLast() {
+      if (!undoSnapshot) return false;
+      try {
+        const current = JSON.stringify(state);
+        const previous = undoSnapshot;
+        restoringUndo = true;
+        state = sanitizeState(JSON.parse(previous));
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        undoSnapshot = current;
+        window.dispatchEvent(new CustomEvent("nourish:state", { detail: state }));
+        return true;
+      } catch (error) {
+        return false;
+      } finally {
+        restoringUndo = false;
+      }
     },
     exportData() {
       return JSON.stringify(Object.assign({}, state, { exportedAt: new Date().toISOString() }), null, 2);

@@ -864,6 +864,13 @@ dialog { color: var(--ink); }
 .app-stage { transition: transform 150ms ease; }
 @keyframes pull-refresh-spin { to { transform: rotate(360deg); } }
 
+/* Confirmation snackbar with one-tap undo. */
+.toast { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: min(420px, calc(100% - 28px)); }
+.toast.is-visible { pointer-events: auto; }
+.toast > span { min-width: 0; overflow-wrap: anywhere; }
+.toast [data-toast-undo] { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; min-height: 31px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(255,255,255,.1); color: var(--green); cursor: pointer; font: inherit; font-size: 10px; font-weight: 850; }
+.toast [data-toast-undo] i { font-size: 15px; font-style: normal; }
+
 /* Keep the Today dashboard fully inside narrow phone screens. */
 @media (max-width: 860px) {
   .app-stage,
