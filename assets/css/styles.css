@@ -852,6 +852,12 @@ dialog { color: var(--ink); }
   .onboarding { align-items: start; padding-top: 110px; }.onboarding-brand { left: 18px; }.onboarding-progress { top: 75px; width: calc(100% - 36px); }.onboarding-step h1 { font-size: 46px; }.target-preview { grid-template-columns: repeat(2, 1fr); }.onboarding .form-grid.two-col { grid-template-columns: 1fr 1fr; }
 }
 
+/* Bengaluru restaurant menu browser */
+.restaurant-browser { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, .7fr) auto; align-items: center; gap: 14px; margin-bottom: 14px; padding: 17px 18px; border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(135deg, var(--surface), color-mix(in srgb, var(--green-soft) 35%, var(--surface))); }
+.restaurant-browser h2 { margin: 3px 0; font-size: 18px; letter-spacing: -.03em; }.restaurant-browser p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.45; }.restaurant-browser > span { color: var(--green-deep); font-size: 9px; font-weight: 800; white-space: nowrap; }
+.restaurant-source { display: grid; gap: 3px; padding: 12px; border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line)); border-radius: 13px; background: color-mix(in srgb, var(--amber) 10%, var(--surface)); }.restaurant-source.is-verified { border-color: color-mix(in srgb, var(--green-deep) 35%, var(--line)); background: var(--green-soft); }.restaurant-source strong { font-size: 10px; }.restaurant-source span { color: var(--muted); font-size: 9px; line-height: 1.45; }
+@media (max-width: 600px) { .restaurant-browser { grid-template-columns: minmax(0, 1fr); padding: 15px; }.restaurant-browser > span { white-space: normal; } }
+
 /* Keep the Today dashboard fully inside narrow phone screens. */
 @media (max-width: 860px) {
   .app-stage,

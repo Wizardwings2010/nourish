@@ -8,6 +8,7 @@
   const mealLabels = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snacks" };
   let installPrompt = null;
   let activeFoodFilter = "all";
+  let activeRestaurant = "";
   let selectedRecommendation = null;
 
   function escapeHtml(value) {
@@ -248,6 +249,7 @@
     const profile = state.profile;
     const query = String($("[data-food-search]").value || "").trim().toLowerCase();
     let foods = N.nutrition.getFoods().filter((food) => N.nutrition.compatibleWithProfile(food, profile));
+    if (activeRestaurant) foods = foods.filter((food) => food.restaurant === activeRestaurant);
     if (query) foods = foods.filter((food) => `${food.name} ${food.category} ${(food.tags || []).join(" ")}`.toLowerCase().includes(query));
     if (activeFoodFilter === "recent") {
       const ids = [...state.logs].reverse().map((entry) => entry.foodId);
@@ -271,13 +273,20 @@
 
   function foodCard(food) {
     const favorite = N.storage.getState().favoriteFoodIds.includes(food.id);
-    return `<button class="food-card" type="button" data-food-id="${escapeHtml(food.id)}"><span class="food-emoji" aria-hidden="true">${escapeHtml(food.emoji || "🍽️")}</span><div><strong>${escapeHtml(food.name)}${favorite ? '<i class="favorite-mark" aria-label="Favorite">★</i>' : ""}</strong><small>${escapeHtml(food.servingLabel)}</small></div><span>${formatNumber(food.calories)} kcal</span></button>`;
+    return `<button class="food-card" type="button" data-food-id="${escapeHtml(food.id)}"><span class="food-emoji" aria-hidden="true">${escapeHtml(food.emoji || "🍽️")}</span><div><strong>${escapeHtml(food.displayName || food.name)}${favorite ? '<i class="favorite-mark" aria-label="Favorite">★</i>' : ""}</strong><small>${food.restaurant ? `${escapeHtml(food.restaurant)} · ` : ""}${escapeHtml(food.servingLabel)}</small></div><span>${formatNumber(food.calories)} kcal</span></button>`;
   }
 
   function renderLog() {
+    const restaurantSelect = $("[data-restaurant-select]");
+    if (restaurantSelect && restaurantSelect.options.length === 1) {
+      const restaurants = [...new Set(N.nutrition.getFoods().map((food) => food.restaurant).filter(Boolean))].sort();
+      restaurantSelect.insertAdjacentHTML("beforeend", restaurants.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join(""));
+    }
     const foods = filteredFoods();
     $("[data-food-grid]").innerHTML = foods.length ? foods.map(foodCard).join("") : '<div class="empty-state"><strong>No matching foods</strong><p>Try another search or create a custom food.</p></div>';
     $("[data-food-count]").textContent = `${foods.length} ${foods.length === 1 ? "food" : "foods"}`;
+    const restaurantCount = $("[data-restaurant-menu-count]");
+    if (restaurantCount) restaurantCount.textContent = activeRestaurant ? `${foods.length} menu items` : `${N.nutrition.getFoods().filter((food) => food.restaurant).length} restaurant items`;
     $("[data-food-results-title]").textContent = activeFoodFilter === "all" ? "Suggested foods" : $(`[data-filter="${activeFoodFilter}"]`).textContent;
 
     const state = N.storage.getState();
@@ -314,6 +323,7 @@
       </div>
       <div class="portion-control"><label><span>Portion multiplier</span><span class="portion-stepper"><button type="button" data-portion-minus aria-label="Decrease portion">−</button><input name="portion" type="number" min="0.25" max="10" step="0.25" value="${preferredPortion}" aria-label="Portion multiplier"><button type="button" data-portion-plus aria-label="Increase portion">+</button></span></label><label><span>Meal</span><select class="select-input" name="meal"><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select></label></div>
       <div class="dialog-impact" data-dialog-impact>This serving uses ${formatNumber(food.calories)} of roughly ${formatNumber(remainingCalories)} remaining calories.</div>
+      ${food.restaurant ? `<div class="restaurant-source ${food.nutritionVerified ? "is-verified" : ""}"><strong>${food.nutritionVerified ? "Published nutrition" : "Estimated serving"}</strong><span>${escapeHtml(food.restaurant)} · ${escapeHtml(food.nutritionSource || "Restaurant serving estimate")}. Availability and recipes can vary by Bengaluru outlet.</span></div>` : ""}
       ${N.features ? N.features.swapMarkup(food) : ""}
       <button class="button button-primary button-full" type="submit">Add to today</button>
     </form>`;
@@ -510,6 +520,12 @@
     });
 
     $("[data-food-search]").addEventListener("input", renderLog);
+    $("[data-restaurant-select]").addEventListener("change", (event) => {
+      activeRestaurant = event.target.value;
+      activeFoodFilter = "all";
+      $$('[data-filter]').forEach((button) => button.classList.toggle("is-active", button.dataset.filter === "all"));
+      renderLog();
+    });
     $("[data-custom-food-form]").addEventListener("submit", (event) => {
       event.preventDefault();
       const values = Object.fromEntries(new FormData(event.currentTarget).entries());

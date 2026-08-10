@@ -10,11 +10,12 @@
   <link rel="manifest" href="manifest.webmanifest?v=3.0.0">
   <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="assets/css/styles.css?v=3.1.0">
+  <link rel="stylesheet" href="assets/css/styles.css?v=3.2.0">
   <script src="assets/js/data.js?v=2.0.0" defer></script>
   <script src="assets/js/foods-expanded.js?v=2.0.0" defer></script>
   <script src="assets/js/foods-indian-specialties.js?v=2.6.0" defer></script>
   <script src="assets/js/foods-drinks-brands.js?v=3.1.0" defer></script>
+  <script src="assets/js/foods-restaurants-bengaluru.js?v=3.2.0" defer></script>
   <script src="assets/js/workout-data.js?v=2.0.0" defer></script>
   <script src="assets/js/storage.js?v=3.0.0" defer></script>
   <script src="assets/js/nutrition.js?v=3.0.0" defer></script>
@@ -23,7 +24,7 @@
   <script src="assets/js/reminders.js?v=2.0.0" defer></script>
   <script src="assets/js/features.js?v=2.0.0" defer></script>
   <script src="assets/js/workout.js?v=3.0.0" defer></script>
-  <script src="assets/js/app.js?v=3.1.0" defer></script>
+  <script src="assets/js/app.js?v=3.2.0" defer></script>
   <script src="assets/js/life-tools.js?v=3.0.0" defer></script>
 </head>
 <body class="app-page">
@@ -197,6 +198,7 @@
                 <button type="button" data-open-recipe><span>⌁</span><strong>Build a recipe</strong><small>Calculate nutrition per serving</small></button>
                 <button type="button" data-save-template><span>⚡</span><strong>Save meal template</strong><small>Reuse today’s meal in one tap</small></button>
               </div>
+              <section class="restaurant-browser" aria-labelledby="restaurant-browser-title"><div><span class="card-kicker">Bengaluru restaurant menus</span><h2 id="restaurant-browser-title">Choose a restaurant</h2><p>Published values are labelled; other items use a restaurant-serving estimate.</p></div><label><span class="sr-only">Restaurant</span><select class="select-input" data-restaurant-select><option value="">All restaurants</option></select></label><span data-restaurant-menu-count></span></section>
               <div class="search-wrap"><span aria-hidden="true"></span><label class="sr-only" for="food-search">Search foods</label><input id="food-search" type="search" placeholder="Search foods, meals or ingredients" autocomplete="off" data-food-search></div>
               <div class="filter-row" aria-label="Food filters" data-food-filters>
                 <button class="filter-chip is-active" type="button" data-filter="all">All</button>
