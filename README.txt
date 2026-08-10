@@ -8,7 +8,7 @@ private nutrition dashboard, first-time setup, meal and water logging, a large
 food library, favorites, custom foods, contextual recommendations, weekly insights, local
 backup and restore, dark mode, offline support, and Nourish Coach. The Log screen
 also includes private camera capture and free on-device image classification. Its
-181-item library covers staple foods, Indian meals, treats, packaged brands,
+279-item library covers staple foods, Indian meals, treats, packaged brands,
 fruits, vegetables and drinks. Hydration reminders can be set from 30 minutes to
 3 hours, limited to user-selected active hours, with optional sound and vibration.
 The expanded personal toolkit includes free barcode lookup, meal templates, a

@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "nourish-shell-v2.5.0";
+const CACHE_NAME = "nourish-shell-v2.6.0";
 const REMINDER_CACHE = "nourish-reminder-state-v1";
 const REMINDER_URL = new URL("./__hydration_reminder__", self.location.href).href;
 const APP_SHELL = [
@@ -13,6 +13,7 @@ const APP_SHELL = [
   "./assets/js/landing.js?v=1.0.1",
   "./assets/js/data.js?v=2.0.0",
   "./assets/js/foods-expanded.js?v=2.0.0",
+  "./assets/js/foods-indian-specialties.js?v=2.6.0",
   "./assets/js/workout-data.js?v=2.0.0",
   "./assets/data/exercises-public-domain.json",
   "./assets/js/storage.js?v=2.0.0",
