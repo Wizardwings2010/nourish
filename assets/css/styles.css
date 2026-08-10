@@ -858,6 +858,12 @@ dialog { color: var(--ink); }
 .restaurant-source { display: grid; gap: 3px; padding: 12px; border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line)); border-radius: 13px; background: color-mix(in srgb, var(--amber) 10%, var(--surface)); }.restaurant-source.is-verified { border-color: color-mix(in srgb, var(--green-deep) 35%, var(--line)); background: var(--green-soft); }.restaurant-source strong { font-size: 10px; }.restaurant-source span { color: var(--muted); font-size: 9px; line-height: 1.45; }
 @media (max-width: 600px) { .restaurant-browser { grid-template-columns: minmax(0, 1fr); padding: 15px; }.restaurant-browser > span { white-space: normal; } }
 
+/* Native-feeling pull to refresh for the installed phone app. */
+.pull-refresh { --pull: 0px; position: fixed; z-index: 80; top: max(8px, env(safe-area-inset-top)); left: 50%; display: flex; align-items: center; gap: 7px; min-height: 34px; padding: 7px 12px; border: 1px solid color-mix(in srgb, var(--line) 75%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: var(--shadow-sm); color: var(--muted); font-size: 9px; font-weight: 800; opacity: 0; pointer-events: none; transform: translate(-50%, calc(-48px + min(var(--pull), 48px))); transition: opacity 120ms ease, transform 120ms ease; backdrop-filter: blur(16px); }
+.pull-refresh.is-visible { opacity: 1; }.pull-refresh.is-ready { color: var(--green-deep); }.pull-refresh i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--green-soft); color: var(--green-deep); font-size: 14px; }.pull-refresh.is-ready i { transform: rotate(180deg); }.pull-refresh.is-refreshing i { animation: pull-refresh-spin 700ms linear infinite; }
+.app-stage { transition: transform 150ms ease; }
+@keyframes pull-refresh-spin { to { transform: rotate(360deg); } }
+
 /* Keep the Today dashboard fully inside narrow phone screens. */
 @media (max-width: 860px) {
   .app-stage,
