@@ -3,7 +3,7 @@
 
   window.Nourish = window.Nourish || {};
   const STORAGE_KEY = "nourish-state-v1";
-  const STATE_VERSION = 1;
+  const STATE_VERSION = 2;
 
   function uid(prefix) {
     if (window.crypto && typeof window.crypto.randomUUID === "function") return `${prefix}-${window.crypto.randomUUID()}`;
@@ -29,6 +29,10 @@
       mealTemplates: [],
       dailyPlans: [],
       shoppingList: [],
+      pantryItems: [],
+      preferredPortions: {},
+      recoveryLogs: [],
+      flexibleDays: [],
       weightLogs: [],
       measurementLogs: [],
       progressPhotos: [],
@@ -46,6 +50,8 @@
       settings: {
         theme: "system",
         reduceMotion: false,
+        adaptiveTargets: true,
+        flexibleDiscipline: true,
         hydrationReminder: { enabled: false, intervalMinutes: 60, startTime: "08:00", endTime: "22:00", amount: 250, sound: true, vibration: true, lastReminderAt: null, nextReminderAt: null }
       },
       meta: { createdAt: new Date().toISOString(), lastOpenedAt: new Date().toISOString() }
@@ -63,6 +69,10 @@
     clean.mealTemplates = Array.isArray(candidate.mealTemplates) ? candidate.mealTemplates.filter((item) => item && item.id && item.name && Array.isArray(item.items)).slice(0, 100) : [];
     clean.dailyPlans = Array.isArray(candidate.dailyPlans) ? candidate.dailyPlans.filter((item) => item && item.date && Array.isArray(item.items)).slice(-14) : [];
     clean.shoppingList = Array.isArray(candidate.shoppingList) ? candidate.shoppingList.filter((item) => item && item.id && item.name).slice(0, 300) : [];
+    clean.pantryItems = Array.isArray(candidate.pantryItems) ? candidate.pantryItems.filter((item) => item && item.id && item.name).slice(0, 300) : [];
+    clean.preferredPortions = candidate.preferredPortions && typeof candidate.preferredPortions === "object" ? candidate.preferredPortions : {};
+    clean.recoveryLogs = Array.isArray(candidate.recoveryLogs) ? candidate.recoveryLogs.filter((item) => item && item.date).slice(-90) : [];
+    clean.flexibleDays = Array.isArray(candidate.flexibleDays) ? candidate.flexibleDays.filter((item) => item && item.date).slice(-90) : [];
     clean.weightLogs = Array.isArray(candidate.weightLogs) ? candidate.weightLogs.filter((item) => item && item.id && Number(item.weight) > 0).slice(-365) : [];
     clean.measurementLogs = Array.isArray(candidate.measurementLogs) ? candidate.measurementLogs.filter((item) => item && item.id).slice(-365) : [];
     clean.progressPhotos = Array.isArray(candidate.progressPhotos) ? candidate.progressPhotos.filter((item) => item && item.id && item.dataUrl).slice(-12) : [];
@@ -107,7 +117,9 @@
     },
     addLog(foodId, portion, meal) {
       const now = new Date();
-      state.logs.push({ id: uid("meal"), foodId, portion: Number(portion) || 1, meal: meal || "snack", date: localDayKey(now), createdAt: now.toISOString() });
+      const amount = Number(portion) || 1;
+      state.logs.push({ id: uid("meal"), foodId, portion: amount, meal: meal || "snack", date: localDayKey(now), createdAt: now.toISOString() });
+      state.preferredPortions[foodId] = amount;
       return save();
     },
     removeLog(id) {
@@ -165,6 +177,36 @@
     },
     removeShoppingItem(id) {
       state.shoppingList = state.shoppingList.filter((item) => item.id !== id);
+      return save();
+    },
+    addPantryItem(name, expiry, category) {
+      const record = { id: uid("pantry"), name: String(name || "").trim(), expiry: expiry || "", category: category || "Pantry", createdAt: new Date().toISOString() };
+      if (record.name) state.pantryItems.push(record);
+      save();
+      return record;
+    },
+    removePantryItem(id) {
+      state.pantryItems = state.pantryItems.filter((item) => item.id !== id);
+      return save();
+    },
+    addRecovery(values) {
+      const record = Object.assign({ id: uid("recovery"), date: localDayKey(), createdAt: new Date().toISOString() }, values);
+      state.recoveryLogs = state.recoveryLogs.filter((item) => item.date !== record.date).concat(record).slice(-90);
+      save();
+      return record;
+    },
+    setFlexibleDay(type, date) {
+      const key = date || localDayKey();
+      state.flexibleDays = state.flexibleDays.filter((item) => item.date !== key).concat({ id: uid("flex"), date: key, type: type || "flex", createdAt: new Date().toISOString() }).slice(-90);
+      return save();
+    },
+    clearFlexibleDay(date) {
+      const key = date || localDayKey();
+      state.flexibleDays = state.flexibleDays.filter((item) => item.date !== key);
+      return save();
+    },
+    updateWorkoutPerformance(planId, exerciseId, values) {
+      state.workout.plans = state.workout.plans.map((plan) => plan.id === planId ? Object.assign({}, plan, { exercises: plan.exercises.map((item) => item.exerciseId === exerciseId ? Object.assign({}, item, values) : item) }) : plan);
       return save();
     },
     addWeight(weight) {

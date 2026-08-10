@@ -58,10 +58,14 @@
     const workout = state();
     const schedule = todaySchedule();
     const profile = workout.profile;
-    const restDay = !schedule.active || /rest/i.test(schedule.focus);
+    const recovery = N.storage.getState().recoveryLogs.find((item) => item.date === N.storage.getDayKey());
+    const readiness = recovery ? (Number(recovery.sleep) + Number(recovery.energy) + (6 - Number(recovery.soreness))) / 3 : 3;
+    const recoveryDay = readiness < 2.5;
+    const restDay = !schedule.active || /rest/i.test(schedule.focus) || recoveryDay;
     const selectedTypes = restDay ? ["mobility", "yoga"] : profile.types.length ? profile.types : ["strength"];
     const muscles = focusMuscles(schedule.focus);
-    const desiredCount = Math.max(4, Math.min(10, Math.round(Number(profile.duration || 60) / 8)));
+    const sessionMinutes = recoveryDay ? Math.min(30, Number(profile.duration || 60)) : Number(profile.duration || 60);
+    const desiredCount = Math.max(4, Math.min(10, Math.round(sessionMinutes / 8)));
     let candidates = allExercises().filter((exercise) => selectedTypes.includes(exercise.type) && (muscles.includes(exercise.muscle) || exercise.muscle === "full body"));
     if (candidates.length < desiredCount) candidates = allExercises().filter((exercise) => selectedTypes.includes(exercise.type));
     const experienceRank = { beginner: 0, intermediate: 1, advanced: 2 };
@@ -74,9 +78,9 @@
       if (!equipmentSeen.has(diversityKey) || chosen.length >= Math.floor(desiredCount / 2)) { chosen.push(exercise); equipmentSeen.add(diversityKey); }
     });
     const exercises = chosen.map((exercise) => prescription(exercise, profile));
-    N.storage.saveWorkoutPlan({ date: N.storage.getDayKey(), focus: restDay ? "Recovery & mobility" : schedule.focus, exercises, duration: profile.duration, completed: false });
+    N.storage.saveWorkoutPlan({ date: N.storage.getDayKey(), focus: restDay ? "Recovery & mobility" : schedule.focus, exercises, duration: sessionMinutes, completed: false });
     render();
-    toast(restDay ? "A recovery session is ready." : `${schedule.focus} workout generated.`);
+    toast(recoveryDay ? "Your readiness is low, so Nourish prepared a gentler recovery session." : restDay ? "A recovery session is ready." : `${schedule.focus} workout generated.`);
   }
 
   function exerciseById(id) { return allExercises().find((exercise) => exercise.id === id); }

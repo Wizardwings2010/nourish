@@ -43,7 +43,8 @@
   }
 
   function profileTargets(profile) {
-    return (profile && profile.targets) || N.nutrition.calculateTargets(profile || {});
+    const base = (profile && profile.targets) || N.nutrition.calculateTargets(profile || {});
+    return N.lifeTools ? N.lifeTools.adaptiveTargets(base) : base;
   }
 
   function setupOnboarding() {
@@ -301,6 +302,7 @@
     const targets = profileTargets(N.storage.getState().profile);
     const remainingCalories = Math.max(0, targets.calories - totals.calories);
     const isFavorite = N.storage.getState().favoriteFoodIds.includes(food.id);
+    const preferredPortion = Number(N.storage.getState().preferredPortions[food.id]) || 1;
     const content = $("[data-food-dialog-content]");
     content.innerHTML = `<form class="food-dialog-inner" data-add-food-form>
       <div class="dialog-food-hero"><span class="food-emoji" aria-hidden="true">${escapeHtml(food.emoji || "🍽️")}</span><div><h2>${escapeHtml(food.name)}</h2><p>${escapeHtml(food.servingLabel)} · starter value estimate</p></div></div>
@@ -308,7 +310,7 @@
       <div class="nutrition-facts" data-scaled-facts>
         <div><strong>${formatNumber(food.calories)}</strong><span>Calories</span></div><div><strong>${formatNumber(food.protein, 1)}g</strong><span>Protein</span></div><div><strong>${formatNumber(food.fiber, 1)}g</strong><span>Fibre</span></div><div><strong>${formatNumber(food.carbs, 1)}g</strong><span>Carbs</span></div>
       </div>
-      <div class="portion-control"><label><span>Portion multiplier</span><span class="portion-stepper"><button type="button" data-portion-minus aria-label="Decrease portion">−</button><input name="portion" type="number" min="0.25" max="10" step="0.25" value="1" aria-label="Portion multiplier"><button type="button" data-portion-plus aria-label="Increase portion">+</button></span></label><label><span>Meal</span><select class="select-input" name="meal"><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select></label></div>
+      <div class="portion-control"><label><span>Portion multiplier</span><span class="portion-stepper"><button type="button" data-portion-minus aria-label="Decrease portion">−</button><input name="portion" type="number" min="0.25" max="10" step="0.25" value="${preferredPortion}" aria-label="Portion multiplier"><button type="button" data-portion-plus aria-label="Increase portion">+</button></span></label><label><span>Meal</span><select class="select-input" name="meal"><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select></label></div>
       <div class="dialog-impact" data-dialog-impact>This serving uses ${formatNumber(food.calories)} of roughly ${formatNumber(remainingCalories)} remaining calories.</div>
       ${N.features ? N.features.swapMarkup(food) : ""}
       <button class="button button-primary button-full" type="submit">Add to today</button>

@@ -7,22 +7,23 @@
   <meta name="description" content="Your private Nourish nutrition dashboard for meals, hydration, nutrients, insights, and personalized food guidance.">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Nourish — Today</title>
-  <link rel="manifest" href="manifest.webmanifest?v=2.2.0">
+  <link rel="manifest" href="manifest.webmanifest?v=3.0.0">
   <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="assets/css/styles.css?v=2.8.1">
+  <link rel="stylesheet" href="assets/css/styles.css?v=3.0.0">
   <script src="assets/js/data.js?v=2.0.0" defer></script>
   <script src="assets/js/foods-expanded.js?v=2.0.0" defer></script>
   <script src="assets/js/foods-indian-specialties.js?v=2.6.0" defer></script>
   <script src="assets/js/workout-data.js?v=2.0.0" defer></script>
-  <script src="assets/js/storage.js?v=2.0.0" defer></script>
-  <script src="assets/js/nutrition.js?v=2.0.0" defer></script>
+  <script src="assets/js/storage.js?v=3.0.0" defer></script>
+  <script src="assets/js/nutrition.js?v=3.0.0" defer></script>
   <script src="assets/js/coach.js?v=2.0.0" defer></script>
   <script src="assets/js/camera.js?v=2.0.0" defer></script>
   <script src="assets/js/reminders.js?v=2.0.0" defer></script>
   <script src="assets/js/features.js?v=2.0.0" defer></script>
-  <script src="assets/js/workout.js?v=2.5.0" defer></script>
-  <script src="assets/js/app.js?v=2.1.0" defer></script>
+  <script src="assets/js/workout.js?v=3.0.0" defer></script>
+  <script src="assets/js/app.js?v=3.0.0" defer></script>
+  <script src="assets/js/life-tools.js?v=3.0.0" defer></script>
 </head>
 <body class="app-page">
   <a class="skip-link" href="#app-main">Skip to content</a>
@@ -127,6 +128,11 @@
           </div>
 
           <div class="today-grid">
+            <article class="dashboard-card command-centre-card">
+              <div class="command-centre-copy"><span class="card-kicker">Daily command centre</span><h2 data-command-title>Your next useful move</h2><p data-command-copy>One glance, then get on with your day.</p></div>
+              <div class="command-stats" data-command-stats></div>
+              <div class="command-actions"><button type="button" data-repeat-last>Repeat last meal</button><button type="button" data-open-voice>Voice log</button><button type="button" data-open-recovery>Recovery check</button><button type="button" data-open-pantry>My pantry</button></div>
+            </article>
             <article class="dashboard-card calorie-card">
               <div class="card-heading"><div><span class="card-kicker">Energy</span><h2>Daily calories</h2></div><span class="status-chip" data-calorie-status>On track</span></div>
               <div class="calorie-layout">
@@ -312,6 +318,7 @@
             <aside class="settings-column">
               <article class="settings-card body-progress-card"><span class="card-kicker">Body progress</span><h2>Track your trend</h2><form data-weight-form><label><span>Current weight (kg)</span><input class="text-input" name="weight" type="number" min="30" max="300" step="0.1" required></label><button class="button button-dark button-full" type="submit">Log weight</button></form><div class="weight-trend" data-weight-trend></div><details><summary>Add measurements</summary><form class="measurement-form" data-measurement-form><input class="text-input" name="waist" type="number" min="20" max="250" step="0.1" placeholder="Waist cm"><input class="text-input" name="chest" type="number" min="20" max="250" step="0.1" placeholder="Chest cm"><button class="button button-ghost button-full" type="submit">Save measurements</button></form></details><label class="button button-ghost button-full progress-photo-label">Add private progress photo<input type="file" accept="image/*" capture="user" data-progress-photo></label><div class="progress-photo-grid" data-progress-photos></div></article>
               <article class="settings-card shopping-card"><span class="card-kicker">Shopping list</span><h2>Plan the next shop</h2><form class="shopping-add" data-shopping-form><input class="text-input" name="name" maxlength="60" placeholder="Add an item" required><button type="submit">+</button></form><div class="shopping-list" data-shopping-list></div></article>
+              <article class="settings-card life-tools-card"><span class="card-kicker">Smart daily tools</span><h2>Less effort, better rhythm</h2><p>Recovery-aware targets, pantry expiry checks and flexible days stay private on this phone.</p><div class="life-tool-actions"><button type="button" data-open-recovery>Recovery check-in <span>→</span></button><button type="button" data-open-pantry>Pantry &amp; expiry <span>→</span></button><button type="button" data-mark-flex>Plan a flexible day <span>→</span></button></div><label class="setting-row"><span><strong>Adaptive targets</strong><small>Adjust today gently for training and recovery</small></span><input class="toggle-input" type="checkbox" data-adaptive-targets><i aria-hidden="true"></i></label></article>
               <article class="settings-card reminder-card">
                 <div class="reminder-card-head"><div><span class="card-kicker">Hydration reminders</span><h2>Build a water rhythm</h2></div><label class="compact-toggle" aria-label="Turn hydration reminders on"><input class="toggle-input" type="checkbox" data-reminder-enabled><i aria-hidden="true"></i></label></div>
                 <p class="reminder-intro">Choose how often Nourish should nudge you during your active hours.</p>
@@ -409,6 +416,12 @@
   <dialog class="feature-dialog exercise-dialog" data-exercise-dialog><form method="dialog"><button class="dialog-close" value="cancel" aria-label="Close exercise details">×</button></form><div data-exercise-dialog-content></div></dialog>
 
   <dialog class="feature-dialog" data-custom-exercise-dialog><form class="custom-food-form" data-custom-exercise-form><div class="dialog-heading"><div><span class="card-kicker">Your movement</span><h2>Add custom exercise</h2></div><button class="dialog-close" type="button" data-close-workout-dialog aria-label="Close custom exercise form">×</button></div><div class="form-grid two-col"><label class="span-two"><span>Exercise name</span><input class="text-input" name="name" required maxlength="60"></label><label><span>Training type</span><select class="select-input" name="type"><option value="strength">Weight lifting</option><option value="yoga">Yoga</option><option value="calisthenics">Calisthenics</option><option value="cardio">Cardio</option><option value="hiit">HIIT</option><option value="mobility">Mobility</option></select></label><label><span>Muscle / focus</span><input class="text-input" name="muscle" required placeholder="e.g. chest"></label><label><span>Equipment</span><input class="text-input" name="equipment" placeholder="e.g. dumbbells"></label><label><span>Default sets</span><input class="text-input" name="sets" type="number" min="1" max="10" value="3"></label><label><span>Reps or time</span><input class="text-input" name="reps" value="8–12"></label><label class="span-two"><span>Technique cue</span><textarea class="feature-textarea" name="cue" maxlength="300"></textarea></label></div><button class="button button-primary button-full" type="submit">Save exercise</button></form></dialog>
+
+  <dialog class="feature-dialog" data-voice-dialog><form class="custom-food-form" data-voice-form><div class="dialog-heading"><div><span class="card-kicker">Hands-free logging</span><h2>Tell Nourish what you ate</h2></div><button class="dialog-close" type="button" data-close-life aria-label="Close voice logging">×</button></div><p class="feature-dialog-copy">Say or type something like “two idlis and one banana”. Nourish finds the closest foods for you.</p><button class="button button-dark button-full" type="button" data-start-voice>Start listening</button><label><span>What did you eat?</span><textarea class="feature-textarea" name="speech" required placeholder="Two rotis, paneer and a banana"></textarea></label><label><span>Meal</span><select class="select-input" name="meal"><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select></label><div class="feature-result" data-voice-result></div><button class="button button-primary button-full" type="submit">Find and log foods</button></form></dialog>
+
+  <dialog class="feature-dialog" data-recovery-dialog><form class="custom-food-form" data-recovery-form><div class="dialog-heading"><div><span class="card-kicker">Daily readiness</span><h2>How are you feeling?</h2></div><button class="dialog-close" type="button" data-close-life aria-label="Close recovery check-in">×</button></div><div class="recovery-scale"><label><span>Sleep quality</span><input type="range" name="sleep" min="1" max="5" value="3"></label><label><span>Energy</span><input type="range" name="energy" min="1" max="5" value="3"></label><label><span>Soreness</span><input type="range" name="soreness" min="1" max="5" value="2"></label></div><label><span>Optional note</span><input class="text-input" name="note" maxlength="120" placeholder="Late night, sore legs…"></label><button class="button button-primary button-full" type="submit">Save today’s check-in</button></form></dialog>
+
+  <dialog class="feature-dialog" data-pantry-dialog><div class="custom-food-form"><div class="dialog-heading"><div><span class="card-kicker">Use what you have</span><h2>Pantry &amp; expiry</h2></div><button class="dialog-close" type="button" data-close-life aria-label="Close pantry">×</button></div><form class="pantry-add" data-pantry-form><input class="text-input" name="name" maxlength="60" required placeholder="Ingredient or food"><input class="text-input" name="expiry" type="date"><button class="button button-primary" type="submit">Add</button></form><div class="pantry-list" data-pantry-list></div><button class="button button-ghost button-full" type="button" data-pantry-suggest>Suggest meals from these foods</button></div></dialog>
 
   <div class="toast" role="status" aria-live="polite" data-toast></div>
 </body>

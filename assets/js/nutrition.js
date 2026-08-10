@@ -140,7 +140,7 @@
 
   function currentStreak() {
     const state = window.Nourish.storage.getState();
-    const loggedDays = new Set(state.logs.map((entry) => entry.date).concat(state.waterLogs.map((entry) => entry.date)));
+    const loggedDays = new Set(state.logs.map((entry) => entry.date).concat(state.waterLogs.map((entry) => entry.date), (state.flexibleDays || []).map((entry) => entry.date)));
     let streak = 0;
     const cursor = new Date();
     cursor.setHours(12, 0, 0, 0);
